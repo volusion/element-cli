@@ -1,0 +1,55 @@
+{
+  "name": "@volusion/element-cli",
+  "version": "0.0.12",
+  "description": "Command line interface for the Volusion Element ecosystem",
+  "author": "Volusion LLC",
+  "main": "bin/src/index.js",
+  "license": "MIT",
+  "private": false,
+  "preferGlobal": true,
+  "bin": {
+    "element": "./bin/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc --pretty",
+    "doc": "mmdc -i docs/*.mmd",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "prepush": "npm run lint && npm run build",
+    "release": "npm run prepush && np",
+    "watch": "tsc --watch --pretty",
+    "test": "npm run build && npm run test:unit",
+    "test:e2e": "npm run build && jest --config ./jest-e2e.config.json",
+    "test:cov": "jest --config ./jest-unit.config.json --coverage",
+    "test:unit": "jest --config ./jest-unit.config.json",
+    "test:watch": "jest --config ./jest-unit.config.json --watch"
+  },
+  "dependencies": {
+    "axios": "0.18.x",
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "git-clone": "^0.1.0",
+    "inquirer": "^6.2.0",
+    "replace-in-file": "^3.4.0",
+    "rimraf": "^2.6.2"
+  },
+  "devDependencies": {
+    "@types/inquirer": "0.0.43",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.1.2",
+    "@types/rimraf": "^2.0.2",
+    "husky": "^0.14.3",
+    "jest": "^23.5.0",
+    "mermaid.cli": "^0.5.1",
+    "np": "^3.1.0",
+    "prettier": "^1.14.0",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.14.0",
+    "tslint-microsoft-contrib": "^6.0.0",
+    "tslint-plugin-prettier": "^1.3.0",
+    "typescript": "^2.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
