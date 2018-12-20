@@ -1,6 +1,6 @@
 # Element CLI
 
-The [command-line interface](https://en.wikipedia.org/wiki/Command-line_interface) for developing and managing building [blocks](./todo-our-docs) for the next generation of [Volusion](https://www.volusion.com) storefronts
+The [command-line interface](https://en.wikipedia.org/wiki/Command-line_interface) for developing and managing building [blocks](https://github.com/volusion/element-tutorial) for the next generation of [Volusion](https://www.volusion.com) storefronts
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ npm install -g @volusion/element-cli
 
 ### `element login`
 
-The command for logging into the Element ecosystem. This is necessary for publishing and updating [blocks](./todo-our-docs).
+The command for logging into the Element ecosystem. This is necessary for publishing and updating [blocks](https://github.com/volusion/element-tutorial#vocabulary).
 
 Use the same credentials you use to log into your [Volusion store admin](https://admin.volusion.com).
 
@@ -32,7 +32,7 @@ Use the same credentials you use to log into your [Volusion store admin](https:/
 
 ### `element new NAME`
 
-The command for scaffolding a new [block](./todo-our-docs). The command will clone the [Element Block Starter repo](https://github.com/volusion/element-block-starter), allowing you to quickly get started with your development process.
+The command for scaffolding a new block. The command will clone the [Element Block Starter repo](https://github.com/volusion/element-blockstarter), allowing you to quickly get started with your development process.
 
 * * *
 
@@ -86,7 +86,7 @@ Please see the [DEVELOPING](./DEVELOPING.md) document for more information on th
 
 ## Contributing
 
-We're very excited that you're interested in contributing! At present, we are working toward formalizing a process for providing feedback on and accepting pull requests. If you would like us to prioritize this process, please vote on [this open issue](./todo) with a 👍 . We do already have a [Code of Conduct](CODE_OF_CONDUCT.md) in place.
+We're very excited that you're interested in contributing! At present, we are working toward formalizing a process for providing feedback on and accepting pull requests. If you would like us to prioritize this process, please vote on [this open issue](https://github.com/volusion/element-cli/issues/1) with a 👍 . We do already have a [Code of Conduct](CODE_OF_CONDUCT.md) in place.
 
 ## Authors
 
