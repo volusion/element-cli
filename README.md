@@ -88,14 +88,6 @@ Please see the [DEVELOPING](./DEVELOPING.md) document for more information on th
 
 We're very excited that you're interested in contributing! At present, we are working toward formalizing a process for providing feedback on and accepting pull requests. If you would like us to prioritize this process, please vote on [this open issue](https://github.com/volusion/element-cli/issues/1) with a 👍 . We do already have a [Code of Conduct](CODE_OF_CONDUCT.md) in place.
 
-## Authors
-
-- **Chris Boette** &mdash; [chrisbodhi](https://github.com/chrisbodhi)
-- **Greg Murray** &mdash; [greg-murray-volusion](https://github.com/greg-murray-volusion)
-- **Jason Vertrees** &mdash; [inchoate](https://github.com/inchoate)
-- **Maggie Petersen** &mdash; [MaggieVolusion](https://github.com/MaggieVolusion)
-- **Santiago Oquendo** &mdash; [santios](https://github.com/santios)
-
 ## Code of Conduct
 
 Our Code of Conduct, by way of the Contributor Covenant, [can be found here](CODE_OF_CONDUCT.md).
