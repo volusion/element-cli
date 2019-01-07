@@ -38,7 +38,7 @@
     "@types/node": "^10.1.2",
     "@types/rimraf": "^2.0.2",
     "husky": "^0.14.3",
-    "jest": "^23.5.0",
+    "jest": "^23.6.0",
     "mermaid.cli": "^0.5.1",
     "np": "^3.1.0",
     "prettier": "^1.14.0",
