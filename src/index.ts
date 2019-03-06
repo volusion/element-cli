@@ -5,7 +5,7 @@ import * as inquirer from "inquirer";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
-import { publish, update, release } from "./commands/publish";
+import { publish, release, update } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
@@ -115,10 +115,7 @@ program
         `Release your existing block in the Block Theme Registry
                     [-n, --note] Note attached to the release`
     )
-    .option(
-        "-n, --note [note]",
-        "Note attached to the release"
-    )
+    .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
         release(note);
     });

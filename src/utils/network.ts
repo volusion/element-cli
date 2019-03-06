@@ -76,8 +76,8 @@ const buildRequestConfig = ({
                 category,
                 isPublic,
                 names,
-                thumbnail,
                 note,
+                thumbnail,
             },
         },
     };
@@ -137,17 +137,14 @@ export const updateBlockRequest = (
         })
     );
 
-export const releaseBlockRequest = (
-    id: string,
-    note: string
-): AxiosPromise =>
+export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
     axios(
         buildSimpleRequestConfig({
-            method: "post",
-            url: `${config.blockRegistry.host}/blocks/${id}`,
             data: {
                 note,
-            }
+            },
+            method: "post",
+            url: `${config.blockRegistry.host}/blocks/${id}`,
         })
     );
 

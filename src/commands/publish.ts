@@ -7,17 +7,17 @@ import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
     checkErrorCode,
     createBlockRequest,
-    releaseBlockRequest,
     logError,
     logSuccess,
     readBlockSettingsFile,
+    releaseBlockRequest,
+    sortVersions,
     updateBlockRequest,
     updateBlockSettingsFile,
     validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateInputs,
     validateNotAlreadyPublishedOrExit,
-    sortVersions,
 } from "../utils";
 
 const publish = async (
@@ -43,14 +43,17 @@ const publish = async (
 
             updateBlockSettingsFile({
                 category,
+                currentVersion,
                 displayName,
                 id: res.data.id,
+                isActive: true,
                 isPublic: false,
                 isStaging: true,
-                isActive: true,
-                currentVersion,
             });
-            logSuccess(`Published ${displayName} v${currentVersion} for staging with the ID ${res.data.id}.`);
+            logSuccess(
+                `Published ${displayName} v${currentVersion} for staging with the ID
+                ${res.data.id}.`
+            );
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -112,6 +115,5 @@ const release = (note: string): void => {
             exit(1);
         });
 };
-
 
 export { publish, update, release };

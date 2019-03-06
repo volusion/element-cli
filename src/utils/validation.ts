@@ -43,7 +43,7 @@ export const validateInputs = (
 };
 
 export const validateNotAlreadyPublishedOrExit = (): void => {
-    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
+    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     if (!!fileContents.id && fileContents.isStaging) {
         logError(
@@ -54,12 +54,10 @@ export const validateNotAlreadyPublishedOrExit = (): void => {
 };
 
 export const validateBlockExistOrExit = (): void => {
-    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
+    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     if (!fileContents.id) {
-        logError(
-            "Please ensure you have published the block first."
-        );
+        logError("Please ensure you have published the block first.");
         exit(1);
     }
 };

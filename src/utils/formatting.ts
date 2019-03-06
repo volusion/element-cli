@@ -19,11 +19,11 @@ interface VersionObject {
     createdOn: string;
 }
 
-export const sortVersions = (versions: VersionObject[]) : VersionObject[] => {
+export const sortVersions = (versions: VersionObject[]): VersionObject[] => {
     return versions.sort((a, b) => {
         const aDate = new Date(a.createdOn);
         const bDate = new Date(b.createdOn);
-    
+
         if (a.version > b.version) {
             return -1;
         } else if (a.version < b.version) {
@@ -33,7 +33,7 @@ export const sortVersions = (versions: VersionObject[]) : VersionObject[] => {
         } else if (aDate < bDate) {
             return 1;
         }
-        
+
         return 0;
     });
 };
