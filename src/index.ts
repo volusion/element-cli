@@ -5,7 +5,7 @@ import * as inquirer from "inquirer";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
-import { publish, publishUpdate } from "./commands/publish";
+import { publish, update, release } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
@@ -42,11 +42,18 @@ program
     });
 
 program
-    .command("new <name>")
+    .command("create <name>")
     .description("Create the block boilerplate")
     .action((...args) => {
         cloneBoilerplate(args);
     });
+
+// program
+//     .command("major <name>")
+//     .description("Create new block version as a new folder in your current repo")
+//     .action((...args) => {
+//         //cloneBoilerplate(args);
+//     });
 
 program
     .command("publish")
@@ -99,7 +106,21 @@ program
         "Toggle whether or not the block is public."
     )
     .action(({ togglePublic }: any) => {
-        publishUpdate(togglePublic);
+        update(togglePublic);
+    });
+
+program
+    .command("release")
+    .description(
+        `Release your existing block in the Block Theme Registry
+                    [-n, --note] Note attached to the release`
+    )
+    .option(
+        "-n, --note [note]",
+        "Note attached to the release"
+    )
+    .action(({ note }: any) => {
+        release(note);
     });
 
 program.on("command:*", () => {

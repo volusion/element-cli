@@ -7,14 +7,17 @@ import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
     checkErrorCode,
     createBlockRequest,
+    releaseBlockRequest,
     logError,
     logSuccess,
     readBlockSettingsFile,
     updateBlockRequest,
     updateBlockSettingsFile,
+    validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateInputs,
     validateNotAlreadyPublishedOrExit,
+    sortVersions,
 } from "../utils";
 
 const publish = async (
@@ -35,13 +38,19 @@ const publish = async (
 
     createBlockRequest({ displayName, publishedName }, blockData, category)
         .then((res: AxiosResponse) => {
+            const sortedVersions = sortVersions(res.data.versions);
+            const currentVersion = sortedVersions[0].version;
+
             updateBlockSettingsFile({
                 category,
                 displayName,
                 id: res.data.id,
                 isPublic: false,
+                isStaging: true,
+                isActive: true,
+                currentVersion,
             });
-            logSuccess(`Published ${displayName} with the ID ${res.data.id}.`);
+            logSuccess(`Published ${displayName} v${currentVersion} for staging with the ID ${res.data.id}.`);
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -51,19 +60,15 @@ const publish = async (
         });
 };
 
-const publishUpdate = (togglePublic: boolean): void => {
+const update = (togglePublic: boolean): void => {
     validateFilesExistOrExit();
+    validateBlockExistOrExit();
+
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const { displayName, id, isPublic, publishedName } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
-
-    if (!id) {
-        logError("Please ensure you have published the block first.");
-        exit(1);
-        return;
-    }
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
 
@@ -85,4 +90,28 @@ const publishUpdate = (togglePublic: boolean): void => {
         });
 };
 
-export { publish, publishUpdate };
+const release = (note: string): void => {
+    validateFilesExistOrExit();
+    validateBlockExistOrExit();
+
+    const { displayName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    releaseBlockRequest(id, note)
+        .then((res: AxiosResponse) => {
+            updateBlockSettingsFile({
+                id: res.data.id,
+                isStaging: false,
+            });
+
+            logSuccess(`Released ${displayName} with ID ${res.data.id}.`);
+            exit(0);
+        })
+        .catch((err: AxiosError) => {
+            logError(err);
+            checkErrorCode(err);
+            exit(1);
+        });
+};
+
+
+export { publish, update, release };

@@ -5,7 +5,7 @@ export {
     updateBlockSettingsFile,
     writeTokenFile,
 } from "./files";
-export { formatName, toPascalCase } from "./formatting";
+export { formatName, toPascalCase, sortVersions } from "./formatting";
 export { prepareImage } from "./images";
 export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {
@@ -13,9 +13,11 @@ export {
     getCategoryNames,
     loginRequest,
     updateBlockRequest,
+    releaseBlockRequest,
 } from "./network";
 export {
     validateInputs,
+    validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateNotAlreadyPublishedOrExit,
 } from "./validation";

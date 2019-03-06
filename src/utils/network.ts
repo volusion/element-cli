@@ -52,6 +52,7 @@ const buildRequestConfig = ({
     method = "post",
     names,
     url,
+    note = "",
 }: {
     category?: string;
     fileData: string;
@@ -62,6 +63,7 @@ const buildRequestConfig = ({
         publishedName: string;
     };
     url: string;
+    note?: string;
 }): AxiosRequestConfig => {
     const options = requestOptions(method as HTTPVerbs, url);
     const thumbnail = prepareImage(THUMBNAIL_PATH);
@@ -75,8 +77,26 @@ const buildRequestConfig = ({
                 isPublic,
                 names,
                 thumbnail,
+                note,
             },
         },
+    };
+};
+
+const buildSimpleRequestConfig = ({
+    method = "post",
+    url,
+    data,
+}: {
+    method: string;
+    url: string;
+    data?: object;
+}): AxiosRequestConfig => {
+    const options = requestOptions(method as HTTPVerbs, url);
+
+    return {
+        ...options,
+        data,
     };
 };
 
@@ -104,7 +124,7 @@ export const updateBlockRequest = (
         publishedName: string;
     },
     fileData: string,
-    blockId: string,
+    id: string,
     isPublic: boolean
 ): AxiosPromise =>
     axios(
@@ -113,7 +133,21 @@ export const updateBlockRequest = (
             isPublic,
             method: "put",
             names,
-            url: `${config.blockRegistry.host}/blocks/${blockId}`,
+            url: `${config.blockRegistry.host}/blocks/${id}`,
+        })
+    );
+
+export const releaseBlockRequest = (
+    id: string,
+    note: string
+): AxiosPromise =>
+    axios(
+        buildSimpleRequestConfig({
+            method: "post",
+            url: `${config.blockRegistry.host}/blocks/${id}`,
+            data: {
+                note,
+            }
         })
     );
 
