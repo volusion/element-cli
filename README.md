@@ -60,6 +60,18 @@ _Protip_: `element update -p`
 
 * * *
 
+### `element release`
+
+When you are ready to push your block live you can use this command.
+
+### `element release --note "release note for the block`
+
+There's only one optional flag for this command, and it's to add a release note to your block
+
+_Protip_: `element update -n "release note for the block"`
+
+* * *
+
 ### Adding a Thumbnail
 
 Create a PNG file, ideally less than 100 kb in size, and save it in the root directory of the block as `thumbnail.png.` When publishing or updating your block, this file will be saved and then be shown in the Volusion store admin's [Site Designer](https://admin.volusion.com/designer).
