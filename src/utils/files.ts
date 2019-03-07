@@ -4,14 +4,6 @@ import { exit } from "process";
 import { BLOCK_SETTINGS_FILE, RC_FILE_PATH } from "../constants";
 import { formatName, logError, toPascalCase } from "./index";
 
-export interface BlockVersion {
-    isActive: boolean;
-    isMajor: boolean;
-    isStaging: boolean;
-    releaseNotes: string;
-    version: number;
-}
-
 export interface BlockFileObject {
     category?: string;
     displayName: string;
@@ -19,7 +11,6 @@ export interface BlockFileObject {
     isPublic: boolean;
     publishedName: string;
     activeVersion: number;
-    versions: BlockVersion[];
 }
 
 type UpdateData = Partial<BlockFileObject>;

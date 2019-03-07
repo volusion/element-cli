@@ -12,7 +12,7 @@ import {
     readTokenFile,
 } from "./index";
 
-type HTTPVerbs = "get" | "post" | "put";
+type HTTPVerbs = "GET" | "POST" | "PUT";
 
 const getAppToken = (): string => {
     const token = readTokenFile(RC_FILE_PATH);
@@ -49,7 +49,7 @@ const buildRequestConfig = ({
     category,
     fileData,
     isPublic = false,
-    method = "post",
+    method = "POST",
     names,
     url,
     note = "",
@@ -84,7 +84,7 @@ const buildRequestConfig = ({
 };
 
 const buildSimpleRequestConfig = ({
-    method = "post",
+    method = "POST",
     url,
     data,
 }: {
@@ -112,7 +112,7 @@ export const createBlockRequest = (
         buildRequestConfig({
             category,
             fileData,
-            method: "post",
+            method: "POST",
             names,
             url: `${config.blockRegistry.host}/blocks`,
         })
@@ -131,7 +131,7 @@ export const updateBlockRequest = (
         buildRequestConfig({
             fileData,
             isPublic,
-            method: "put",
+            method: "PUT",
             names,
             url: `${config.blockRegistry.host}/blocks/${id}`,
         })
@@ -143,7 +143,7 @@ export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
             data: {
                 note,
             },
-            method: "put",
+            method: "PUT",
             url: `${config.blockRegistry.host}/blocks/${id}/release`,
         })
     );
@@ -151,7 +151,7 @@ export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
 export const getCategoryNames = async (): Promise<string[] | undefined> => {
     try {
         const url = `${config.blockRegistry.host}/categories`;
-        return await axios(requestOptions("get", url)).then(
+        return await axios(requestOptions("GET", url)).then(
             (categories: AxiosResponse) =>
                 categories.data.map(
                     (category: { id: string; name: string }) => category.name
@@ -181,5 +181,5 @@ export const loginRequest = (
         logInfo(`\nRequesting ${config.loginUrl}...\n\n`);
     }
 
-    return axios({ data, method: "post", url: config.loginUrl });
+    return axios({ data, method: "POST", url: config.loginUrl });
 };

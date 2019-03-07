@@ -34,21 +34,21 @@ const publish = async (
     );
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const { activeVersion } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     createBlockRequest({ displayName, publishedName }, blockData, category)
         .then((res: AxiosResponse) => {
-            const activeVersion = 1;
+            const version = activeVersion || 1;
 
             updateBlockSettingsFile({
-                activeVersion,
+                activeVersion: version,
                 category,
                 displayName,
                 id: res.data.id,
-                versions: res.data.versions,
             });
 
             logSuccess(`
-                Published ${displayName} v${activeVersion} for staging
+                Published ${displayName} v${version} for staging
                 ID ${res.data.id}
             `);
 
@@ -87,7 +87,6 @@ const update = (togglePublic: boolean): void => {
             updateBlockSettingsFile({
                 id: res.data.id,
                 isPublic: publicFlag,
-                versions: res.data.versions,
             });
 
             logSuccess(`
@@ -116,7 +115,6 @@ const release = (note: string): void => {
         .then((res: AxiosResponse) => {
             updateBlockSettingsFile({
                 id: res.data.id,
-                versions: res.data.versions,
             });
 
             logSuccess(`
