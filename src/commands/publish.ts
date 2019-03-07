@@ -51,7 +51,7 @@ const publish = async (
             });
             logSuccess(`
                 Published ${displayName} v${currentVersion} for staging
-                ID ${res.data.id}.
+                ID ${res.data.id}
             `);
             exit(0);
         })
@@ -88,7 +88,7 @@ const update = (togglePublic: boolean): void => {
             updateBlockSettingsFile({ id: res.data.id, isPublic: publicFlag });
             logSuccess(`
                 Updated ${displayName} v${currentVersion}
-                ID ${res.data.id}.
+                ID ${res.data.id}
             `);
             exit(0);
         })
@@ -116,7 +116,7 @@ const release = (note: string): void => {
 
             logSuccess(`
                 Released ${displayName} v${currentVersion}
-                ID ${res.data.id}.
+                ID ${res.data.id}
             `);
             exit(0);
         })
