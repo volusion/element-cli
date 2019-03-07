@@ -46,14 +46,13 @@ const publish = async (
                 currentVersion,
                 displayName,
                 id: res.data.id,
-                isActive: true,
                 isPublic: false,
                 isStaging: true,
             });
-            logSuccess(
-                `Published ${displayName} v${currentVersion} for staging with the ID
-                ${res.data.id}.`
-            );
+            logSuccess(`
+                Published ${displayName} v${currentVersion} for staging
+                ID ${res.data.id}.
+            `);
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -69,9 +68,13 @@ const update = (togglePublic: boolean): void => {
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
-    const { displayName, id, isPublic, publishedName } = readBlockSettingsFile(
-        BLOCK_SETTINGS_FILE
-    );
+    const {
+        currentVersion,
+        displayName,
+        id,
+        isPublic,
+        publishedName,
+    } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
 
@@ -83,7 +86,10 @@ const update = (togglePublic: boolean): void => {
     )
         .then((res: AxiosResponse) => {
             updateBlockSettingsFile({ id: res.data.id, isPublic: publicFlag });
-            logSuccess(`Updated ${displayName} with ID ${res.data.id}.`);
+            logSuccess(`
+                Updated ${displayName} v${currentVersion}
+                ID ${res.data.id}.
+            `);
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -97,7 +103,9 @@ const release = (note: string): void => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
-    const { displayName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+    const { currentVersion, displayName, id } = readBlockSettingsFile(
+        BLOCK_SETTINGS_FILE
+    );
 
     releaseBlockRequest(id, note)
         .then((res: AxiosResponse) => {
@@ -106,7 +114,10 @@ const release = (note: string): void => {
                 isStaging: false,
             });
 
-            logSuccess(`Released ${displayName} with ID ${res.data.id}.`);
+            logSuccess(`
+                Released ${displayName} v${currentVersion}
+                ID ${res.data.id}.
+            `);
             exit(0);
         })
         .catch((err: AxiosError) => {

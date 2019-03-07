@@ -143,8 +143,8 @@ export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
             data: {
                 note,
             },
-            method: "post",
-            url: `${config.blockRegistry.host}/blocks/${id}`,
+            method: "put",
+            url: `${config.blockRegistry.host}/blocks/${id}/release`,
         })
     );
 
