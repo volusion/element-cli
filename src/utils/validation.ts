@@ -45,9 +45,9 @@ export const validateInputs = (
 export const validateNotAlreadyPublishedOrExit = (): void => {
     const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    if (!!fileContents.id && fileContents.isStaging) {
+    if (!!fileContents.id) {
         logError(
-            "This block has already been published to staging. Please try running the `update` command to update the contents of this block."
+            "This block has already been published to staging. Please try running the `update` command to update the contents of this block or run the `release` command to push your block live."
         );
         exit(1);
     }

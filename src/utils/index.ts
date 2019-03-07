@@ -5,7 +5,7 @@ export {
     updateBlockSettingsFile,
     writeTokenFile,
 } from "./files";
-export { formatName, toPascalCase, sortVersions } from "./formatting";
+export { formatName, toPascalCase } from "./formatting";
 export { prepareImage } from "./images";
 export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {

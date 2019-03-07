@@ -11,7 +11,6 @@ import {
     logSuccess,
     readBlockSettingsFile,
     releaseBlockRequest,
-    sortVersions,
     updateBlockRequest,
     updateBlockSettingsFile,
     validateBlockExistOrExit,
@@ -38,21 +37,21 @@ const publish = async (
 
     createBlockRequest({ displayName, publishedName }, blockData, category)
         .then((res: AxiosResponse) => {
-            const sortedVersions = sortVersions(res.data.versions);
-            const currentVersion = sortedVersions[0].version;
+            const activeVersion = 1;
 
             updateBlockSettingsFile({
+                activeVersion,
                 category,
-                currentVersion,
                 displayName,
                 id: res.data.id,
-                isPublic: false,
-                isStaging: true,
+                versions: res.data.versions,
             });
+
             logSuccess(`
-                Published ${displayName} v${currentVersion} for staging
+                Published ${displayName} v${activeVersion} for staging
                 ID ${res.data.id}
             `);
+
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -69,7 +68,7 @@ const update = (togglePublic: boolean): void => {
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const {
-        currentVersion,
+        activeVersion,
         displayName,
         id,
         isPublic,
@@ -85,11 +84,17 @@ const update = (togglePublic: boolean): void => {
         publicFlag
     )
         .then((res: AxiosResponse) => {
-            updateBlockSettingsFile({ id: res.data.id, isPublic: publicFlag });
+            updateBlockSettingsFile({
+                id: res.data.id,
+                isPublic: publicFlag,
+                versions: res.data.versions,
+            });
+
             logSuccess(`
-                Updated ${displayName} v${currentVersion}
+                Updated ${displayName} v${activeVersion} for staging
                 ID ${res.data.id}
             `);
+
             exit(0);
         })
         .catch((err: AxiosError) => {
@@ -103,7 +108,7 @@ const release = (note: string): void => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
-    const { currentVersion, displayName, id } = readBlockSettingsFile(
+    const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
 
@@ -111,13 +116,14 @@ const release = (note: string): void => {
         .then((res: AxiosResponse) => {
             updateBlockSettingsFile({
                 id: res.data.id,
-                isStaging: false,
+                versions: res.data.versions,
             });
 
             logSuccess(`
-                Released ${displayName} v${currentVersion}
+                Released ${displayName} v${activeVersion} for production
                 ID ${res.data.id}
             `);
+
             exit(0);
         })
         .catch((err: AxiosError) => {

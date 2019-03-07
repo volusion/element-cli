@@ -15,7 +15,7 @@
     "doc": "mmdc -i docs/*.mmd",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "prepush": "npm run lint && npm run build",
-    "release": "npm run prepush && npm link",
+    "release": "npm run prepush && np",
     "watch": "tsc --watch --pretty",
     "test": "npm run build && npm run test:unit",
     "test:e2e": "npm run build && jest --config ./jest-e2e.config.json",

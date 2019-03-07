@@ -42,18 +42,11 @@ program
     });
 
 program
-    .command("create <name>")
+    .command("new <name>")
     .description("Create the block boilerplate")
     .action((...args) => {
         cloneBoilerplate(args);
     });
-
-// program
-//     .command("major <name>")
-//     .description("Create new block version as a new folder in your current repo")
-//     .action((...args) => {
-//         //cloneBoilerplate(args);
-//     });
 
 program
     .command("publish")
@@ -112,7 +105,8 @@ program
 program
     .command("release")
     .description(
-        `Release your existing block in the Block Theme Registry
+        `Release your existing block and push it live to the public.
+                   However, other people can't use the block unless you update and toggle public.
                     [-n, --note] Note attached to the release`
     )
     .option("-n, --note [note]", "Note attached to the release")
