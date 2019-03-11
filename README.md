@@ -72,6 +72,12 @@ _Protip_: `element update -n "release note for the block"`
 
 * * *
 
+### `element rollback`
+
+If you have a problem with a release you can rollback to a previous release. The current release will be moved back to staging and the previous release will become active. If you rollback again it will remove the release from staging. You can continue to rollback until you only have your original release.
+
+* * *
+
 ### Adding a Thumbnail
 
 Create a PNG file, ideally less than 100 kb in size, and save it in the root directory of the block as `thumbnail.png.` When publishing or updating your block, this file will be saved and then be shown in the Volusion store admin's [Site Designer](https://admin.volusion.com/designer).

@@ -14,6 +14,7 @@ export {
     loginRequest,
     updateBlockRequest,
     releaseBlockRequest,
+    rollbackBlockRequest,
 } from "./network";
 export {
     validateInputs,

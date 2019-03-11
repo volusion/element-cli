@@ -5,7 +5,7 @@ import * as inquirer from "inquirer";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
-import { publish, release, update } from "./commands/publish";
+import { publish, release, rollback, update } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
@@ -100,6 +100,19 @@ program
     )
     .action(({ togglePublic }: any) => {
         update(togglePublic);
+    });
+
+program
+    .command("rollback")
+    .description(
+        `Rollback your existing block to a previous block in the Block Theme Registry
+                   If this was a released block it will be pushed back to the staging state
+                   and the previous released block will be used in production.
+                   If this was a staged block it will be removed.
+                   You can not rollback if you only have one released block.`
+    )
+    .action(() => {
+        rollback();
     });
 
 program

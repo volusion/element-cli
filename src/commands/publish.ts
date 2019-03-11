@@ -11,6 +11,7 @@ import {
     logSuccess,
     readBlockSettingsFile,
     releaseBlockRequest,
+    rollbackBlockRequest,
     updateBlockRequest,
     updateBlockSettingsFile,
     validateBlockExistOrExit,
@@ -45,6 +46,8 @@ const publish = async (
                 category,
                 displayName,
                 id: res.data.id,
+                isPublic: false,
+                isReleased: false,
             });
 
             logSuccess(`
@@ -85,8 +88,8 @@ const update = (togglePublic: boolean): void => {
     )
         .then((res: AxiosResponse) => {
             updateBlockSettingsFile({
-                id: res.data.id,
                 isPublic: publicFlag,
+                isReleased: false,
             });
 
             logSuccess(`
@@ -114,7 +117,7 @@ const release = (note: string): void => {
     releaseBlockRequest(id, note)
         .then((res: AxiosResponse) => {
             updateBlockSettingsFile({
-                id: res.data.id,
+                isReleased: true,
             });
 
             logSuccess(`
@@ -131,4 +134,46 @@ const release = (note: string): void => {
         });
 };
 
-export { publish, update, release };
+const rollback = (): void => {
+    validateFilesExistOrExit();
+    validateBlockExistOrExit();
+
+    const {
+        activeVersion,
+        displayName,
+        id,
+        isReleased,
+    } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    rollbackBlockRequest(id)
+        .then((res: AxiosResponse) => {
+            if (isReleased) {
+                updateBlockSettingsFile({
+                    isReleased: false,
+                });
+
+                logSuccess(`
+                    Rollbacked ${displayName} v${activeVersion} back to staging
+                    ID ${res.data.id}
+                `);
+            } else {
+                updateBlockSettingsFile({
+                    isReleased: true,
+                });
+
+                logSuccess(`
+                    Removed ${displayName} v${activeVersion} from staging
+                    ID ${res.data.id}
+                `);
+            }
+
+            exit(0);
+        })
+        .catch((err: AxiosError) => {
+            logError(err);
+            checkErrorCode(err);
+            exit(1);
+        });
+};
+
+export { publish, update, release, rollback };

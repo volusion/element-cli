@@ -148,6 +148,14 @@ export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
         })
     );
 
+export const rollbackBlockRequest = (id: string): AxiosPromise =>
+    axios(
+        buildSimpleRequestConfig({
+            method: "PUT",
+            url: `${config.blockRegistry.host}/blocks/${id}/rollback`,
+        })
+    );
+
 export const getCategoryNames = async (): Promise<string[] | undefined> => {
     try {
         const url = `${config.blockRegistry.host}/categories`;
