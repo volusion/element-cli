@@ -23,4 +23,10 @@ export {
     validateNotAlreadyPublishedOrExit,
 } from "./validation";
 
-export { gitInit, cloneRepo, createBranch, updateBranch } from "./git";
+export {
+    branchLookup,
+    gitInit,
+    cloneRepo,
+    createBranch,
+    updateBranch,
+} from "./git";

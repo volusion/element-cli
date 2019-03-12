@@ -5,7 +5,13 @@ import * as inquirer from "inquirer";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
-import { publish, release, rollback, update } from "./commands/publish";
+import {
+    newMajorVersion,
+    publish,
+    release,
+    rollback,
+    update,
+} from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
@@ -52,7 +58,7 @@ program
     .command("publish")
     .description(
         `Publish a block to the Block Theme Registry
-                    [-n, --name NAME] [-c, --category CATEGORY]
+                    [-n, --name NAME] [-c, --category CATEGORY] [-m, --major-version]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
@@ -65,24 +71,33 @@ program
         "-c, --category [category]",
         "The Category name that best fits this block"
     )
-    .action(async ({ name, category }) => {
-        const nameInput = typeof name !== "function" ? name : null;
-        const categories = await getCategoryNames();
-
-        if (category) {
-            publish(nameInput, category, categories);
+    .option(
+        "-m, --major-version [majorVersion]",
+        "Publish a new major version of this block"
+    )
+    .action(async ({ name, category, majorVersion }) => {
+        if (majorVersion) {
+            newMajorVersion();
         } else {
-            inquirer
-                .prompt({
-                    choices: categories,
-                    message: "Select the Category that best fits this block:",
-                    name: "categoryFromList",
-                    type: "list",
-                })
-                .then((val: any) => {
-                    const { categoryFromList } = val;
-                    publish(nameInput, categoryFromList);
-                });
+            const nameInput = typeof name !== "function" ? name : null;
+            const categories = await getCategoryNames();
+
+            if (category) {
+                publish(nameInput, category, categories);
+            } else {
+                inquirer
+                    .prompt({
+                        choices: categories,
+                        message:
+                            "Select the Category that best fits this block:",
+                        name: "categoryFromList",
+                        type: "list",
+                    })
+                    .then((val: any) => {
+                        const { categoryFromList } = val;
+                        publish(nameInput, categoryFromList);
+                    });
+            }
         }
     });
 

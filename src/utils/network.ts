@@ -51,6 +51,7 @@ const buildRequestConfig = ({
     isPublic = false,
     method = "POST",
     names,
+    version,
     url,
     note = "",
 }: {
@@ -62,6 +63,7 @@ const buildRequestConfig = ({
         displayName: string;
         publishedName: string;
     };
+    version?: number;
     url: string;
     note?: string;
 }): AxiosRequestConfig => {
@@ -79,6 +81,7 @@ const buildRequestConfig = ({
                 note,
                 thumbnail,
             },
+            version,
         },
     };
 };
@@ -125,7 +128,8 @@ export const updateBlockRequest = (
     },
     fileData: string,
     id: string,
-    isPublic: boolean
+    isPublic: boolean,
+    version: number
 ): AxiosPromise =>
     axios(
         buildRequestConfig({
@@ -134,23 +138,35 @@ export const updateBlockRequest = (
             method: "PUT",
             names,
             url: `${config.blockRegistry.host}/blocks/${id}`,
+            version,
         })
     );
 
-export const releaseBlockRequest = (id: string, note: string): AxiosPromise =>
+export const releaseBlockRequest = (
+    id: string,
+    note: string,
+    version: number
+): AxiosPromise =>
     axios(
         buildSimpleRequestConfig({
             data: {
                 note,
+                version,
             },
             method: "PUT",
             url: `${config.blockRegistry.host}/blocks/${id}/release`,
         })
     );
 
-export const rollbackBlockRequest = (id: string): AxiosPromise =>
+export const rollbackBlockRequest = (
+    id: string,
+    version: number
+): AxiosPromise =>
     axios(
         buildSimpleRequestConfig({
+            data: {
+                version,
+            },
             method: "PUT",
             url: `${config.blockRegistry.host}/blocks/${id}/rollback`,
         })

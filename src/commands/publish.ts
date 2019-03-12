@@ -5,6 +5,7 @@ import { cwd, exit } from "process";
 
 import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
+    branchLookup,
     checkErrorCode,
     createBlockRequest,
     createBranch,
@@ -37,7 +38,6 @@ const publish = async (
     );
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
-    const { activeVersion } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
         const res: AxiosResponse = await createBlockRequest(
@@ -49,7 +49,7 @@ const publish = async (
             category
         );
 
-        const version = activeVersion || 1;
+        const version = 1;
 
         updateBlockSettingsFile({
             activeVersion: version,
@@ -61,6 +61,61 @@ const publish = async (
         });
 
         await createBranch(`v${version}`);
+
+        logSuccess(`
+            Published ${displayName} v${version} for staging
+            ID ${res.data.id}
+        `);
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
+};
+
+const newMajorVersion = async (): Promise<void> => {
+    validateFilesExistOrExit();
+    validateBlockExistOrExit();
+
+    const filePath = resolve(cwd(), BUILT_FILE_PATH);
+    const blockData = readFileSync(filePath).toString();
+    const {
+        activeVersion,
+        displayName,
+        id,
+        isPublic,
+        publishedName,
+    } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    const version = activeVersion + 1;
+
+    try {
+        const isBranch = await branchLookup(`v${version}`);
+
+        if (isBranch) {
+            throw new Error(
+                `v${version} already exists, please checkout v${version} branch to publish a new major version`
+            );
+        }
+
+        const res: AxiosResponse = await updateBlockRequest(
+            { displayName, publishedName },
+            blockData,
+            id,
+            isPublic,
+            version
+        );
+
+        await createBranch(`v${version}`);
+
+        updateBlockSettingsFile({
+            activeVersion: version,
+            isReleased: false,
+        });
+
+        await updateBranch(`v${version}`);
 
         logSuccess(`
             Published ${displayName} v${version} for staging
@@ -96,7 +151,8 @@ const update = async (togglePublic: boolean): Promise<void> => {
             { displayName, publishedName },
             blockData,
             id,
-            publicFlag
+            publicFlag,
+            activeVersion
         );
 
         updateBlockSettingsFile({
@@ -128,11 +184,17 @@ const release = async (note: string): Promise<void> => {
     );
 
     try {
-        const res: AxiosResponse = await releaseBlockRequest(id, note);
+        const res: AxiosResponse = await releaseBlockRequest(
+            id,
+            note,
+            activeVersion
+        );
 
         updateBlockSettingsFile({
             isReleased: true,
         });
+
+        await updateBranch(`v${activeVersion}`);
 
         logSuccess(`
             Released ${displayName} v${activeVersion} for production
@@ -159,12 +221,17 @@ const rollback = async (): Promise<void> => {
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
-        const res: AxiosResponse = await rollbackBlockRequest(id);
+        const res: AxiosResponse = await rollbackBlockRequest(
+            id,
+            activeVersion
+        );
 
         if (isReleased) {
             updateBlockSettingsFile({
                 isReleased: false,
             });
+
+            await updateBranch(`v${activeVersion}`);
 
             logSuccess(`
                 Rollbacked ${displayName} v${activeVersion} back to staging
@@ -174,6 +241,8 @@ const rollback = async (): Promise<void> => {
             updateBlockSettingsFile({
                 isReleased: true,
             });
+
+            await updateBranch(`v${activeVersion}`);
 
             logSuccess(`
                 Removed ${displayName} v${activeVersion} from staging
@@ -189,4 +258,4 @@ const rollback = async (): Promise<void> => {
     }
 };
 
-export { publish, update, release, rollback };
+export { publish, update, release, rollback, newMajorVersion };

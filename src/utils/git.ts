@@ -57,3 +57,17 @@ export const cloneRepo = async (url: string, local: string): Promise<void> => {
         },
     });
 };
+
+export const branchLookup = async (branch: string): Promise<boolean> => {
+    const repository = await Git.Repository.open(
+        path.resolve(process.cwd(), ".git")
+    );
+
+    try {
+        await Git.Branch.lookup(repository, branch, 0);
+
+        return Promise.resolve(true);
+    } catch (err) {
+        return Promise.resolve(false);
+    }
+};
