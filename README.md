@@ -36,15 +36,20 @@ The command for scaffolding a new block. The command will clone the [Element Blo
 
 * * *
 
-### `element publish --name "A NAME TO DISPLAY TO USERS" --category "OPTIONAL CATEGORY"`
+### `element publish --name "A NAME TO DISPLAY TO USERS" --category "OPTIONAL CATEGORY" --new-major`
 
 From the root directory of the block you intend to eventually make available to users of the Site Designer on the [Volusion store admin](https://admin.volusion.com).
+
+Publishing your first block also will create a v1 branch to manage the version code base.
 
 By default, _newly-published blocks will only be visible to you and the other members of your organization_.
 
 In the event that a `-c/--category` flag is not passed, you will be prompted with a list of valid Category names from which to select.
 
+If you pass `-m or --new-major` it will create a new major version for the block and a corresponding git branch.
+
 _Protip_: `element publish -n "A NAME TO DISPLAY TO USERS" -c "OPTIONAL CATEGORY"`
+_Protip_: `element publish -m`
 
 * * *
 
@@ -75,6 +80,8 @@ _Protip_: `element update -n "release note for the block"`
 ### `element rollback`
 
 If you have a problem with a release you can rollback to a previous release. The current release will be moved back to staging and the previous release will become active. If you rollback again it will remove the release from staging. You can continue to rollback until you only have your original release.
+
+Each major version can be rolled back individually. However, you won't be able to rollback the inital published major version of the block.
 
 * * *
 
