@@ -142,6 +142,22 @@ export const updateBlockRequest = (
         })
     );
 
+export const createMajorBlockRequest = (
+    content: string,
+    id: string,
+    version: number
+): AxiosPromise =>
+    axios(
+        buildSimpleRequestConfig({
+            data: {
+                content,
+                version,
+            },
+            method: "POST",
+            url: `${config.blockRegistry.host}/blocks/${id}/major`,
+        })
+    );
+
 export const releaseBlockRequest = (
     id: string,
     note: string,

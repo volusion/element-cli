@@ -9,6 +9,7 @@ import {
     checkErrorCode,
     createBlockRequest,
     createBranch,
+    createMajorBlockRequest,
     logError,
     logSuccess,
     readBlockSettingsFile,
@@ -81,13 +82,9 @@ const newMajorVersion = async (): Promise<void> => {
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
-    const {
-        activeVersion,
-        displayName,
-        id,
-        isPublic,
-        publishedName,
-    } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+    const { activeVersion, displayName, id } = readBlockSettingsFile(
+        BLOCK_SETTINGS_FILE
+    );
 
     const version = activeVersion + 1;
 
@@ -100,11 +97,9 @@ const newMajorVersion = async (): Promise<void> => {
             );
         }
 
-        const res: AxiosResponse = await updateBlockRequest(
-            { displayName, publishedName },
+        const res: AxiosResponse = await createMajorBlockRequest(
             blockData,
             id,
-            isPublic,
             version
         );
 

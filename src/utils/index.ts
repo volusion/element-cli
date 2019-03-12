@@ -10,6 +10,7 @@ export { prepareImage } from "./images";
 export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {
     createBlockRequest,
+    createMajorBlockRequest,
     getCategoryNames,
     loginRequest,
     updateBlockRequest,
