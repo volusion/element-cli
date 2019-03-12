@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { cwd, exit } from "process";
@@ -7,6 +7,7 @@ import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
     checkErrorCode,
     createBlockRequest,
+    createBranch,
     logError,
     logSuccess,
     readBlockSettingsFile,
@@ -14,6 +15,7 @@ import {
     rollbackBlockRequest,
     updateBlockRequest,
     updateBlockSettingsFile,
+    updateBranch,
     validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateInputs,
@@ -37,34 +39,43 @@ const publish = async (
     const blockData = readFileSync(filePath).toString();
     const { activeVersion } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    createBlockRequest({ displayName, publishedName }, blockData, category)
-        .then((res: AxiosResponse) => {
-            const version = activeVersion || 1;
-
-            updateBlockSettingsFile({
-                activeVersion: version,
-                category,
+    try {
+        const res: AxiosResponse = await createBlockRequest(
+            {
                 displayName,
-                id: res.data.id,
-                isPublic: false,
-                isReleased: false,
-            });
+                publishedName,
+            },
+            blockData,
+            category
+        );
 
-            logSuccess(`
-                Published ${displayName} v${version} for staging
-                ID ${res.data.id}
-            `);
+        const version = activeVersion || 1;
 
-            exit(0);
-        })
-        .catch((err: AxiosError) => {
-            logError(err);
-            checkErrorCode(err);
-            exit(1);
+        updateBlockSettingsFile({
+            activeVersion: version,
+            category,
+            displayName,
+            id: res.data.id,
+            isPublic: false,
+            isReleased: false,
         });
+
+        await createBranch(`v${version}`);
+
+        logSuccess(`
+            Published ${displayName} v${version} for staging
+            ID ${res.data.id}
+        `);
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
 };
 
-const update = (togglePublic: boolean): void => {
+const update = async (togglePublic: boolean): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
@@ -80,33 +91,35 @@ const update = (togglePublic: boolean): void => {
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
 
-    updateBlockRequest(
-        { displayName, publishedName },
-        blockData,
-        id,
-        publicFlag
-    )
-        .then((res: AxiosResponse) => {
-            updateBlockSettingsFile({
-                isPublic: publicFlag,
-                isReleased: false,
-            });
+    try {
+        const res: AxiosResponse = await updateBlockRequest(
+            { displayName, publishedName },
+            blockData,
+            id,
+            publicFlag
+        );
 
-            logSuccess(`
-                Updated ${displayName} v${activeVersion} for staging
-                ID ${res.data.id}
-            `);
-
-            exit(0);
-        })
-        .catch((err: AxiosError) => {
-            logError(err);
-            checkErrorCode(err);
-            exit(1);
+        updateBlockSettingsFile({
+            isPublic: publicFlag,
+            isReleased: false,
         });
+
+        await updateBranch(`v${activeVersion}`);
+
+        logSuccess(`
+            Updated ${displayName} v${activeVersion} for staging
+            ID ${res.data.id}
+        `);
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
 };
 
-const release = (note: string): void => {
+const release = async (note: string): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
@@ -114,27 +127,27 @@ const release = (note: string): void => {
         BLOCK_SETTINGS_FILE
     );
 
-    releaseBlockRequest(id, note)
-        .then((res: AxiosResponse) => {
-            updateBlockSettingsFile({
-                isReleased: true,
-            });
+    try {
+        const res: AxiosResponse = await releaseBlockRequest(id, note);
 
-            logSuccess(`
-                Released ${displayName} v${activeVersion} for production
-                ID ${res.data.id}
-            `);
-
-            exit(0);
-        })
-        .catch((err: AxiosError) => {
-            logError(err);
-            checkErrorCode(err);
-            exit(1);
+        updateBlockSettingsFile({
+            isReleased: true,
         });
+
+        logSuccess(`
+            Released ${displayName} v${activeVersion} for production
+            ID ${res.data.id}
+        `);
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
 };
 
-const rollback = (): void => {
+const rollback = async (): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
@@ -145,35 +158,35 @@ const rollback = (): void => {
         isReleased,
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    rollbackBlockRequest(id)
-        .then((res: AxiosResponse) => {
-            if (isReleased) {
-                updateBlockSettingsFile({
-                    isReleased: false,
-                });
+    try {
+        const res: AxiosResponse = await rollbackBlockRequest(id);
 
-                logSuccess(`
-                    Rollbacked ${displayName} v${activeVersion} back to staging
-                    ID ${res.data.id}
-                `);
-            } else {
-                updateBlockSettingsFile({
-                    isReleased: true,
-                });
+        if (isReleased) {
+            updateBlockSettingsFile({
+                isReleased: false,
+            });
 
-                logSuccess(`
-                    Removed ${displayName} v${activeVersion} from staging
-                    ID ${res.data.id}
-                `);
-            }
+            logSuccess(`
+                Rollbacked ${displayName} v${activeVersion} back to staging
+                ID ${res.data.id}
+            `);
+        } else {
+            updateBlockSettingsFile({
+                isReleased: true,
+            });
 
-            exit(0);
-        })
-        .catch((err: AxiosError) => {
-            logError(err);
-            checkErrorCode(err);
-            exit(1);
-        });
+            logSuccess(`
+                Removed ${displayName} v${activeVersion} from staging
+                ID ${res.data.id}
+            `);
+        }
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
 };
 
 export { publish, update, release, rollback };

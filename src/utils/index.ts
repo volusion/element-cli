@@ -22,3 +22,5 @@ export {
     validateFilesExistOrExit,
     validateNotAlreadyPublishedOrExit,
 } from "./validation";
+
+export { gitInit, cloneRepo, createBranch, updateBranch } from "./git";
