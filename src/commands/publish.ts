@@ -58,7 +58,6 @@ const publish = async (
             displayName,
             id: res.data.id,
             isPublic: false,
-            isReleased: false,
         });
 
         await createBranch(`v${version}`);
@@ -107,7 +106,6 @@ const newMajorVersion = async (): Promise<void> => {
 
         updateBlockSettingsFile({
             activeVersion: version,
-            isReleased: false,
         });
 
         await updateBranch(`v${version}`);
@@ -152,7 +150,6 @@ const update = async (togglePublic: boolean): Promise<void> => {
 
         updateBlockSettingsFile({
             isPublic: publicFlag,
-            isReleased: false,
         });
 
         await updateBranch(`v${activeVersion}`);
@@ -185,12 +182,6 @@ const release = async (note: string): Promise<void> => {
             activeVersion
         );
 
-        updateBlockSettingsFile({
-            isReleased: true,
-        });
-
-        await updateBranch(`v${activeVersion}`);
-
         logSuccess(`
             Released ${displayName} v${activeVersion} for production
             ID ${res.data.id}
@@ -208,12 +199,9 @@ const rollback = async (): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
-    const {
-        activeVersion,
-        displayName,
-        id,
-        isReleased,
-    } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+    const { activeVersion, displayName, id } = readBlockSettingsFile(
+        BLOCK_SETTINGS_FILE
+    );
 
     try {
         const res: AxiosResponse = await rollbackBlockRequest(
@@ -221,29 +209,10 @@ const rollback = async (): Promise<void> => {
             activeVersion
         );
 
-        if (isReleased) {
-            updateBlockSettingsFile({
-                isReleased: false,
-            });
-
-            await updateBranch(`v${activeVersion}`);
-
-            logSuccess(`
-                Rollbacked ${displayName} v${activeVersion} back to staging
-                ID ${res.data.id}
-            `);
-        } else {
-            updateBlockSettingsFile({
-                isReleased: true,
-            });
-
-            await updateBranch(`v${activeVersion}`);
-
-            logSuccess(`
-                Removed ${displayName} v${activeVersion} from staging
-                ID ${res.data.id}
-            `);
-        }
+        logSuccess(`
+            Rollbacked ${displayName} v${activeVersion}
+            ID ${res.data.id}
+        `);
 
         exit(0);
     } catch (err) {

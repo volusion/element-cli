@@ -79,11 +79,10 @@ program
         if (majorVersion) {
             newMajorVersion();
         } else {
-            const nameInput = typeof name !== "function" ? name : null;
             const categories = await getCategoryNames();
 
             if (category) {
-                publish(nameInput, category, categories);
+                publish(name, category, categories);
             } else {
                 inquirer
                     .prompt({
@@ -95,7 +94,7 @@ program
                     })
                     .then((val: any) => {
                         const { categoryFromList } = val;
-                        publish(nameInput, categoryFromList);
+                        publish(name, categoryFromList);
                     });
             }
         }

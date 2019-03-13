@@ -9,7 +9,6 @@ export interface BlockFileObject {
     displayName: string;
     id: string;
     isPublic: boolean;
-    isReleased: boolean;
     publishedName: string;
     activeVersion: number;
 }
