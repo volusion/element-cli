@@ -11,6 +11,7 @@ export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {
     createBlockRequest,
     createMajorBlockRequest,
+    getBlockRequest,
     getCategoryNames,
     loginRequest,
     updateBlockRequest,

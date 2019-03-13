@@ -103,6 +103,9 @@ const buildSimpleRequestConfig = ({
     };
 };
 
+export const getBlockRequest = (id: string): AxiosPromise =>
+    axios(requestOptions("GET", `${config.blockRegistry.host}/blocks/${id}`));
+
 export const createBlockRequest = (
     names: {
         displayName: string;

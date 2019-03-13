@@ -10,6 +10,7 @@ import {
     createBlockRequest,
     createBranch,
     createMajorBlockRequest,
+    gitInit,
     logError,
     logSuccess,
     readBlockSettingsFile,
@@ -222,4 +223,34 @@ const rollback = async (): Promise<void> => {
     }
 };
 
-export { publish, update, release, rollback, newMajorVersion };
+const fix = async (): Promise<void> => {
+    validateFilesExistOrExit();
+
+    const { id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    try {
+        const isBranch = await branchLookup("v1");
+
+        if (!isBranch) {
+            await gitInit("");
+
+            if (id) {
+                updateBlockSettingsFile({
+                    activeVersion: 1,
+                });
+
+                await createBranch("v1");
+            }
+        }
+
+        logSuccess("Fixed block, ready to use!");
+
+        exit(0);
+    } catch (err) {
+        logError(err);
+        checkErrorCode(err);
+        exit(1);
+    }
+};
+
+export { publish, update, release, rollback, newMajorVersion, fix };

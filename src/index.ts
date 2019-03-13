@@ -6,6 +6,7 @@ import * as inquirer from "inquirer";
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
 import {
+    fix,
     newMajorVersion,
     publish,
     release,
@@ -139,6 +140,17 @@ program
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
         release(note);
+    });
+
+program
+    .command("fix")
+    .description(
+        `Fixes the current block's folder to be correctly used by the CLI
+                   If never been published, initializes the .git repo for the block
+                   If it has been published, initializes the .git repo and creates a v1 branch`
+    )
+    .action(() => {
+        fix();
     });
 
 program.on("command:*", () => {
