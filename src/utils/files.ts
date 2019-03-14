@@ -11,6 +11,7 @@ export interface BlockFileObject {
     isPublic: boolean;
     publishedName: string;
     activeVersion: number;
+    git?: boolean;
 }
 
 type UpdateData = Partial<BlockFileObject>;
@@ -24,10 +25,14 @@ const writeFileUtil = (path: string, data: any): void => {
     }
 };
 
-export const createBlockSettingsFile = (name: string): void => {
+export const createBlockSettingsFile = (name: string, git: boolean): void => {
     const displayName = formatName(name);
     const publishedName = toPascalCase(name);
-    const data = JSON.stringify({ displayName, publishedName });
+    const data = JSON.stringify({
+        displayName,
+        git,
+        publishedName,
+    });
 
     writeFileUtil(`${publishedName}/${BLOCK_SETTINGS_FILE}`, data);
 };

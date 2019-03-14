@@ -36,7 +36,7 @@ const updateModuleNames = (name: string): Promise<string[]> => {
     return replace(options);
 };
 
-const cloneBoilerplate = async ([name]: string[]): Promise<void> => {
+const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
     logInfo(`Cloning boilerplate for ${name}...`);
 
     if (existsSync(name)) {
@@ -67,13 +67,14 @@ const cloneBoilerplate = async ([name]: string[]): Promise<void> => {
 
         const updatedFiles: string[] = await updateModuleNames(name);
 
-        await createBlockSettingsFile(name);
+        await createBlockSettingsFile(name, git);
 
         logSuccess(`Updated files ${updatedFiles.join(", ")}!`);
 
-        await gitInit(name);
-
-        logSuccess(`Initalized git repo.`);
+        if (git) {
+            await gitInit(name);
+            logSuccess(`Initalized git repo.`);
+        }
 
         exit(0);
     } catch (err) {

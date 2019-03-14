@@ -10,7 +10,6 @@ import {
     createBlockRequest,
     createBranch,
     createMajorBlockRequest,
-    gitInit,
     logError,
     logSuccess,
     readBlockSettingsFile,
@@ -40,6 +39,7 @@ const publish = async (
     );
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const { git } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
         const res: AxiosResponse = await createBlockRequest(
@@ -61,7 +61,9 @@ const publish = async (
             isPublic: false,
         });
 
-        await createBranch(`v${version}`);
+        if (git) {
+            await createBranch(`v${version}`);
+        }
 
         logSuccess(`
             Published ${displayName} v${version} for staging
@@ -82,7 +84,7 @@ const newMajorVersion = async (): Promise<void> => {
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
-    const { activeVersion, displayName, id } = readBlockSettingsFile(
+    const { activeVersion, displayName, id, git } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
 
@@ -103,13 +105,17 @@ const newMajorVersion = async (): Promise<void> => {
             version
         );
 
-        await createBranch(`v${version}`);
+        if (git) {
+            await createBranch(`v${version}`);
+        }
 
         updateBlockSettingsFile({
             activeVersion: version,
         });
 
-        await updateBranch(`v${version}`);
+        if (git) {
+            await updateBranch(`v${version}`);
+        }
 
         logSuccess(`
             Published ${displayName} v${version} for staging
@@ -136,6 +142,7 @@ const update = async (togglePublic: boolean): Promise<void> => {
         id,
         isPublic,
         publishedName,
+        git,
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
@@ -153,7 +160,9 @@ const update = async (togglePublic: boolean): Promise<void> => {
             isPublic: publicFlag,
         });
 
-        await updateBranch(`v${activeVersion}`);
+        if (git) {
+            await updateBranch(`v${activeVersion}`);
+        }
 
         logSuccess(`
             Updated ${displayName} v${activeVersion} for staging
@@ -223,34 +232,4 @@ const rollback = async (): Promise<void> => {
     }
 };
 
-const fix = async (): Promise<void> => {
-    validateFilesExistOrExit();
-
-    const { id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
-
-    try {
-        const isBranch = await branchLookup("v1");
-
-        if (!isBranch) {
-            await gitInit("");
-
-            if (id) {
-                updateBlockSettingsFile({
-                    activeVersion: 1,
-                });
-
-                await createBranch("v1");
-            }
-        }
-
-        logSuccess("Fixed block, ready to use!");
-
-        exit(0);
-    } catch (err) {
-        logError(err);
-        checkErrorCode(err);
-        exit(1);
-    }
-};
-
-export { publish, update, release, rollback, newMajorVersion, fix };
+export { publish, update, release, rollback, newMajorVersion };

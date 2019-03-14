@@ -6,7 +6,6 @@ import * as inquirer from "inquirer";
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
 import {
-    fix,
     newMajorVersion,
     publish,
     release,
@@ -50,9 +49,13 @@ program
 
 program
     .command("new <name>")
-    .description("Create the block boilerplate")
-    .action((...args) => {
-        cloneBoilerplate(args);
+    .description(
+        `Create the block boilerplate
+                    [-g, --git]`
+    )
+    .option("-g, --git [git]", "Use git to manage major block versions")
+    .action((name, { git }) => {
+        cloneBoilerplate(name, git);
     });
 
 program
@@ -140,17 +143,6 @@ program
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
         release(note);
-    });
-
-program
-    .command("fix")
-    .description(
-        `Fixes the current block's folder to be correctly used by the CLI
-                   If never been published, initializes the .git repo for the block
-                   If it has been published, initializes the .git repo and creates a v1 branch`
-    )
-    .action(() => {
-        fix();
     });
 
 program.on("command:*", () => {

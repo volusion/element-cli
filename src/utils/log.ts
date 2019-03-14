@@ -26,5 +26,7 @@ export const checkErrorCode = (err: AxiosError): void => {
         );
         const message = `Your total upload size -- block, screenshot, and metadata -- was approximately ${roundedContentSize} kb and the maximum payload size is 1000 kb. For an easy win, you could try decreasing the size of the thumbnail.`;
         logInfo(message);
+    } else if (err.response && err.response.data) {
+        logInfo(err.response.data);
     }
 };
