@@ -31,12 +31,14 @@ const updateModuleNames = (name: string): Promise<string[]> => {
     const options = {
         files: [`${name}/local/index.html`, `${name}/rollup.config.js`],
         from: /HelloWorldBlock/g,
-        to: toPascalCase(name),
+        to: name,
     };
     return replace(options);
 };
 
 const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
+    name = toPascalCase(name);
+
     logInfo(`Cloning boilerplate for ${name}...`);
 
     if (existsSync(name)) {

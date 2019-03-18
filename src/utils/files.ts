@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { exit } from "process";
 
 import { BLOCK_SETTINGS_FILE, RC_FILE_PATH } from "../constants";
-import { formatName, logError, toPascalCase } from "./index";
+import { formatName, logError } from "./index";
 
 export interface BlockFileObject {
     category?: string;
@@ -27,14 +27,14 @@ const writeFileUtil = (path: string, data: any): void => {
 
 export const createBlockSettingsFile = (name: string, git: boolean): void => {
     const displayName = formatName(name);
-    const publishedName = toPascalCase(name);
+
     const data = JSON.stringify({
         displayName,
         git,
-        publishedName,
+        publishedName: name,
     });
 
-    writeFileUtil(`${publishedName}/${BLOCK_SETTINGS_FILE}`, data);
+    writeFileUtil(`${name}/${BLOCK_SETTINGS_FILE}`, data);
 };
 
 export const writeTokenFile = (data: string): void => {
