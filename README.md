@@ -30,9 +30,11 @@ Use the same credentials you use to log into your [Volusion store admin](https:/
 
 * * *
 
-### `element new NAME`
+### `element new NAME --git`
 
 The command for scaffolding a new block. The command will clone the [Element Block Starter repo](https://github.com/volusion/element-blockstarter), allowing you to quickly get started with your development process.
+
+You can use the optional `--git` flag to let git handle your block commits and major versions.
 
 * * *
 
