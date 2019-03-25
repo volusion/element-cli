@@ -2,6 +2,7 @@ import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from "axios";
 import { exit } from "process";
 
 import config from "../../config";
+import * as packageFile from "../../package.json";
 import { isVerbose } from "../../src/index";
 import { RC_FILE_PATH, THUMBNAIL_PATH } from "../constants";
 import {
@@ -27,7 +28,11 @@ const requestOptions = (
     method: HTTPVerbs,
     url: string
 ): {
-    headers: { Authorization: string; "Content-Type": string };
+    headers: {
+        Authorization: string;
+        "Content-Type": string;
+        "Element-Cli-Version": string;
+    };
     method: HTTPVerbs;
     url: string;
 } => {
@@ -39,6 +44,7 @@ const requestOptions = (
         headers: {
             Authorization: `Bearer ${getAppToken()}`,
             "Content-Type": "application/json",
+            "Element-Cli-Version": packageFile.version,
         },
         method,
         url,
