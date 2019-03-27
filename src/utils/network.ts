@@ -6,6 +6,7 @@ import * as packageFile from "../../package.json";
 import { isVerbose } from "../../src/index";
 import { RC_FILE_PATH, THUMBNAIL_PATH } from "../constants";
 import {
+    checkErrorCode,
     logError,
     logInfo,
     logWarn,
@@ -208,6 +209,7 @@ export const getCategoryNames = async (): Promise<string[] | undefined> => {
         );
     } catch (err) {
         logError(`Trouble reaching the categories service: ${err.message}`);
+        checkErrorCode(err);
         exit(1);
     }
 };
