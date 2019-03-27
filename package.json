@@ -1,6 +1,6 @@
 {
   "name": "@volusion/element-cli",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Command line interface for the Volusion Element ecosystem",
   "author": "Volusion LLC",
   "main": "bin/src/index.js",
