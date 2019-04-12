@@ -5,7 +5,13 @@ import * as inquirer from "inquirer";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
-import { publish, publishUpdate } from "./commands/publish";
+import {
+    newMajorVersion,
+    publish,
+    release,
+    rollback,
+    update,
+} from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
@@ -43,16 +49,20 @@ program
 
 program
     .command("new <name>")
-    .description("Create the block boilerplate")
-    .action((...args) => {
-        cloneBoilerplate(args);
+    .description(
+        `Create the block boilerplate
+                    [-g, --git]`
+    )
+    .option("-g, --git [git]", "Use git to manage major block versions")
+    .action((name, { git }) => {
+        cloneBoilerplate(name, git);
     });
 
 program
     .command("publish")
     .description(
         `Publish a block to the Block Theme Registry
-                    [-n, --name NAME] [-c, --category CATEGORY]
+                    [-n, --name NAME] [-c, --category CATEGORY] [-m, --major-version]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
@@ -65,24 +75,32 @@ program
         "-c, --category [category]",
         "The Category name that best fits this block"
     )
-    .action(async ({ name, category }) => {
-        const nameInput = typeof name !== "function" ? name : null;
-        const categories = await getCategoryNames();
-
-        if (category) {
-            publish(nameInput, category, categories);
+    .option(
+        "-m, --major-version [majorVersion]",
+        "Publish a new major version of this block"
+    )
+    .action(async ({ name, category, majorVersion }) => {
+        if (majorVersion) {
+            newMajorVersion();
         } else {
-            inquirer
-                .prompt({
-                    choices: categories,
-                    message: "Select the Category that best fits this block:",
-                    name: "categoryFromList",
-                    type: "list",
-                })
-                .then((val: any) => {
-                    const { categoryFromList } = val;
-                    publish(nameInput, categoryFromList);
-                });
+            const categories = await getCategoryNames();
+
+            if (category) {
+                publish(name, category, categories);
+            } else {
+                inquirer
+                    .prompt({
+                        choices: categories,
+                        message:
+                            "Select the Category that best fits this block:",
+                        name: "categoryFromList",
+                        type: "list",
+                    })
+                    .then((val: any) => {
+                        const { categoryFromList } = val;
+                        publish(name, categoryFromList);
+                    });
+            }
         }
     });
 
@@ -99,7 +117,32 @@ program
         "Toggle whether or not the block is public."
     )
     .action(({ togglePublic }: any) => {
-        publishUpdate(togglePublic);
+        update(togglePublic);
+    });
+
+program
+    .command("rollback")
+    .description(
+        `Rollback your existing block to a previous block in the Block Theme Registry
+                   If this was a released block it will be pushed back to the staging state
+                   and the previous released block will be used in production.
+                   If this was a staged block it will be removed.
+                   You can not rollback if you only have one released block.`
+    )
+    .action(() => {
+        rollback();
+    });
+
+program
+    .command("release")
+    .description(
+        `Release your existing block and push it live to the public.
+                   However, other people can't use the block unless you update and toggle public.
+                    [-n, --note] Note attached to the release`
+    )
+    .option("-n, --note [note]", "Note attached to the release")
+    .action(({ note }: any) => {
+        release(note);
     });
 
 program.on("command:*", () => {

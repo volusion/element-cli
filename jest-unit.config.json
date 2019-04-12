@@ -1,7 +1,8 @@
 {
     "moduleFileExtensions": [
       "ts",
-      "js"
+      "js",
+      "json"
     ],
     "moduleDirectories": [
       "node_modules",

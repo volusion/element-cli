@@ -3,7 +3,10 @@ import { existsSync, readFileSync, statSync } from "fs";
 import { THUMBNAIL_PATH } from "../constants";
 import { logInfo, logWarn } from "./index";
 
-const imageToBase64 = (path: string): string => readFileSync(path, "base64");
+const imageToBase64 = (path: string): string =>
+    readFileSync(path, {
+        encoding: "base64",
+    });
 
 const doesExist = (path: string): boolean => existsSync(path);
 

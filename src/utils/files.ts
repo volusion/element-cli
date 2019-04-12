@@ -2,14 +2,16 @@ import { readFileSync, writeFileSync } from "fs";
 import { exit } from "process";
 
 import { BLOCK_SETTINGS_FILE, RC_FILE_PATH } from "../constants";
-import { formatName, logError, toPascalCase } from "./index";
+import { formatName, logError } from "./index";
 
-interface BlockFileObject {
+export interface BlockFileObject {
     category?: string;
     displayName: string;
-    id?: string;
+    id: string;
     isPublic: boolean;
     publishedName: string;
+    activeVersion: number;
+    git?: boolean;
 }
 
 type UpdateData = Partial<BlockFileObject>;
@@ -23,12 +25,16 @@ const writeFileUtil = (path: string, data: any): void => {
     }
 };
 
-export const createBlockSettingsFile = (name: string): void => {
+export const createBlockSettingsFile = (name: string, git: boolean): void => {
     const displayName = formatName(name);
-    const publishedName = toPascalCase(name);
-    const data = JSON.stringify({ displayName, publishedName });
 
-    writeFileUtil(`${publishedName}/${BLOCK_SETTINGS_FILE}`, data);
+    const data = JSON.stringify({
+        displayName,
+        git,
+        publishedName: name,
+    });
+
+    writeFileUtil(`${name}/${BLOCK_SETTINGS_FILE}`, data);
 };
 
 export const writeTokenFile = (data: string): void => {

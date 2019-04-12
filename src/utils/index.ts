@@ -10,12 +10,25 @@ export { prepareImage } from "./images";
 export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {
     createBlockRequest,
+    createMajorBlockRequest,
+    getBlockRequest,
     getCategoryNames,
     loginRequest,
     updateBlockRequest,
+    releaseBlockRequest,
+    rollbackBlockRequest,
 } from "./network";
 export {
     validateInputs,
+    validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateNotAlreadyPublishedOrExit,
 } from "./validation";
+
+export {
+    branchLookup,
+    gitInit,
+    cloneRepo,
+    createBranch,
+    updateBranch,
+} from "./git";

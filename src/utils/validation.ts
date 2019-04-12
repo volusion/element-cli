@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "fs";
+import { existsSync } from "fs";
 import { exit } from "process";
 
 import {
@@ -42,17 +42,22 @@ export const validateInputs = (
     return { displayName, publishedName };
 };
 
-const hasPublishedId = (filePath: string): boolean => {
-    const fileContentsString = readFileSync(filePath).toString();
-    const fileContents = JSON.parse(fileContentsString);
-    return !!fileContents.id;
+export const validateNotAlreadyPublishedOrExit = (): void => {
+    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    if (!!fileContents.id) {
+        logError(
+            "This block has already been published to staging. Please try running the `update` command to update the contents of this block or run the `release` command to push your block live."
+        );
+        exit(1);
+    }
 };
 
-export const validateNotAlreadyPublishedOrExit = (): void => {
-    if (hasPublishedId(BLOCK_SETTINGS_FILE)) {
-        logError(
-            "This block has already been published. Please try re-building and running the `update` command to update the contents of this block."
-        );
+export const validateBlockExistOrExit = (): void => {
+    const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    if (!fileContents.id) {
+        logError("Please ensure you have published the block first.");
         exit(1);
     }
 };
