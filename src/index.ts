@@ -3,7 +3,6 @@
 import * as program from "commander";
 import * as inquirer from "inquirer";
 
-import * as packageFile from "../package.json";
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
 import {
@@ -16,7 +15,7 @@ import {
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
-    .version(packageFile.version, "-v, --version")
+    .version("2.0.2", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
