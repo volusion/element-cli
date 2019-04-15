@@ -10,7 +10,7 @@ export interface BlockFileObject {
     id: string;
     isPublic: boolean;
     publishedName: string;
-    activeVersion: number;
+    activeVersion?: number;
     git?: boolean;
 }
 

@@ -88,7 +88,7 @@ const newMajorVersion = async (): Promise<void> => {
         BLOCK_SETTINGS_FILE
     );
 
-    const version = activeVersion + 1;
+    const version = (activeVersion || 1) + 1;
 
     try {
         const isBranch = await branchLookup(`v${version}`);
@@ -146,6 +146,7 @@ const update = async (togglePublic: boolean): Promise<void> => {
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
+    const version = activeVersion || 1;
 
     try {
         const res: AxiosResponse = await updateBlockRequest(
@@ -153,19 +154,20 @@ const update = async (togglePublic: boolean): Promise<void> => {
             blockData,
             id,
             publicFlag,
-            activeVersion
+            version
         );
 
         updateBlockSettingsFile({
+            activeVersion: version,
             isPublic: publicFlag,
         });
 
         if (git) {
-            await updateBranch(`v${activeVersion}`);
+            await updateBranch(`v${version}`);
         }
 
         logSuccess(`
-            Updated ${displayName} v${activeVersion} for staging
+            Updated ${displayName} v${version} for staging
             ID ${res.data.id}
         `);
 
@@ -185,15 +187,17 @@ const release = async (note: string): Promise<void> => {
         BLOCK_SETTINGS_FILE
     );
 
+    const version = activeVersion || 1;
+
     try {
-        const res: AxiosResponse = await releaseBlockRequest(
-            id,
-            note,
-            activeVersion
-        );
+        const res: AxiosResponse = await releaseBlockRequest(id, note, version);
+
+        updateBlockSettingsFile({
+            activeVersion: version,
+        });
 
         logSuccess(`
-            Released ${displayName} v${activeVersion} for production
+            Released ${displayName} v${version} for production
             ID ${res.data.id}
         `);
 
@@ -213,14 +217,13 @@ const rollback = async (): Promise<void> => {
         BLOCK_SETTINGS_FILE
     );
 
+    const version = activeVersion || 1;
+
     try {
-        const res: AxiosResponse = await rollbackBlockRequest(
-            id,
-            activeVersion
-        );
+        const res: AxiosResponse = await rollbackBlockRequest(id, version);
 
         logSuccess(`
-            Rollbacked ${displayName} v${activeVersion}
+            Rollbacked ${displayName} v${version}
             ID ${res.data.id}
         `);
 
