@@ -18,10 +18,9 @@
     "release": "npm run prepush && np",
     "watch": "tsc --watch --pretty",
     "test": "npm run build && npm run test:unit",
-    "test:e2e": "npm run build && jest --config ./jest-e2e.config.json",
-    "test:cov": "jest --config ./jest-unit.config.json --coverage",
-    "test:unit": "jest --config ./jest-unit.config.json",
-    "test:watch": "jest --config ./jest-unit.config.json --watch"
+    "test:cov": "jest --coverage",
+    "test:unit": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "axios": "0.18.x",
