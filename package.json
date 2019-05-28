@@ -27,7 +27,6 @@
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "inquirer": "^6.2.0",
-    "nodegit": "^0.24.1",
     "replace-in-file": "^3.4.0",
     "rimraf": "^2.6.2"
   },
