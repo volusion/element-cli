@@ -1,73 +1,41 @@
-import * as Git from "nodegit";
+import { exec } from "child_process";
+import { existsSync } from "fs";
 import * as path from "path";
+import * as util from "util";
+const execAsyc = util.promisify(exec);
 
-const commitFiles = async (
-    repository: Git.Repository,
-    message: string
-): Promise<Git.Oid> => {
-    const index = await repository.refreshIndex();
-
-    await index.addAll();
-    await index.write();
-    await index.writeTree();
-
-    const files = index.entries().map(entry => entry.path);
-
-    const signature = Git.Signature.default(repository);
-
-    return await repository.createCommitOnHead(
-        files,
-        signature,
-        signature,
-        message
-    );
+const commitFiles = async (message: string): Promise<void> => {
+    await execAsyc(`git add -A && git commit -m "${message}"`);
 };
 
 export const gitInit = async (name: string): Promise<void> => {
-    await Git.Repository.init(path.resolve(name), 0);
+    await execAsyc(`git init ${path.resolve(name)}`);
 };
 
 export const createBranch = async (branch: string): Promise<void> => {
-    const repository = await Git.Repository.open(
-        path.resolve(process.cwd(), ".git")
-    );
+    const git = path.resolve(process.cwd(), ".git");
 
-    const commit = await commitFiles(repository, `init ${branch}`);
+    if (!existsSync(git)) {
+        throw new Error("This is not a .git repo");
+    }
 
-    await repository.createBranch(branch, commit, true);
-    await repository.checkoutBranch(branch, {});
+    await execAsyc(`git checkout -b ${branch}`);
+    await commitFiles(`init ${branch}`);
 };
 
 export const updateBranch = async (branch: string): Promise<void> => {
-    const repository = await Git.Repository.open(
-        path.resolve(process.cwd(), ".git")
-    );
-
-    await repository.checkoutBranch(branch, {});
-
-    await commitFiles(repository, `update ${branch}`);
+    await commitFiles(`update ${branch}`);
 };
 
 export const cloneRepo = async (url: string, local: string): Promise<void> => {
-    await Git.Clone.clone(url, local, {
-        fetchOpts: {
-            callbacks: {
-                certificateCheck: (): number => 0,
-            },
-        },
-    });
+    await execAsyc(`git clone ${url} ${local}`);
 };
 
 export const branchLookup = async (branch: string): Promise<boolean> => {
-    try {
-        const repository = await Git.Repository.open(
-            path.resolve(process.cwd(), ".git")
-        );
-
-        await Git.Branch.lookup(repository, branch, 0);
-
-        return Promise.resolve(true);
-    } catch (err) {
-        return Promise.resolve(false);
+    const { stdout } = await execAsyc(`git branch --list ${branch}`);
+    if (stdout) {
+        return true;
     }
+
+    return false;
 };
