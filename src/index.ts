@@ -87,7 +87,7 @@ program
             inquirer
                 .prompt({
                     choices: ["No", breaking],
-                    message: "Are making a breaking change?",
+                    message: "Are you making a breaking change?",
                     name: "breakingChange",
                     type: "list",
                 })
@@ -156,7 +156,21 @@ program
     )
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
-        release(note);
+        const isConfirmed = "Yes, to production we go!";
+        inquirer
+            .prompt({
+                choices: [isConfirmed, "No, do not want."],
+                message: "Sure you want to push changes to production?",
+                name: "breakingChange",
+                type: "list",
+            })
+            .then(confirmation => {
+                if (confirmation === isConfirmed) {
+                    release(note);
+                } else {
+                    process.exit();
+                }
+            });
     });
 
 program.on("command:*", () => {
