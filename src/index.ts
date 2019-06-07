@@ -10,6 +10,7 @@ import {
     publish,
     release,
     rollback,
+    rollbackDetails,
     update,
 } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
@@ -144,7 +145,25 @@ program
                    You can not rollback if you only have one released block.`
     )
     .action(() => {
-        rollback();
+        const versions = rollbackDetails();
+        const { current, name, target } = versions;
+        const message = `Do you want to rollback ${name} from version ${current} to ${target}?`;
+        const isConfirmed = "Yes, let's go!";
+
+        inquirer
+            .prompt({
+                choices: [isConfirmed, "No, stay here."],
+                message,
+                name: "rollbackConfirmation",
+                type: "list",
+            })
+            .then(confirmation => {
+                if (confirmation === isConfirmed) {
+                    rollback();
+                } else {
+                    process.exit();
+                }
+            });
     });
 
 program
@@ -161,7 +180,7 @@ program
             .prompt({
                 choices: [isConfirmed, "No, do not want."],
                 message: "Sure you want to push changes to production?",
-                name: "breakingChange",
+                name: "productionRelease",
                 type: "list",
             })
             .then(confirmation => {

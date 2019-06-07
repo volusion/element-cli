@@ -235,4 +235,26 @@ const rollback = async (): Promise<void> => {
     }
 };
 
-export { publish, update, release, rollback, newMajorVersion };
+const rollbackDetails = (): {
+    current: number;
+    target: number;
+    name: string;
+} => {
+    validateFilesExistOrExit();
+    validateBlockExistOrExit();
+
+    const { activeVersion, displayName } = readBlockSettingsFile(
+        BLOCK_SETTINGS_FILE
+    );
+
+    const version = activeVersion || 1;
+    const target = version - 1;
+
+    return {
+        current: version,
+        name: displayName,
+        target,
+    };
+};
+
+export { publish, update, release, rollback, rollbackDetails, newMajorVersion };
