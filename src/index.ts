@@ -83,24 +83,38 @@ program
         if (majorVersion) {
             newMajorVersion();
         } else {
-            const categories = await getCategoryNames();
+            const breaking = "Yes, breaking change";
+            inquirer
+                .prompt({
+                    choices: ["No", breaking],
+                    message: "Are making a breaking change?",
+                    name: "breakingChange",
+                    type: "list",
+                })
+                .then(async change => {
+                    if (change === breaking) {
+                        newMajorVersion();
+                    } else {
+                        const categories = await getCategoryNames();
 
-            if (category) {
-                publish(name, category, categories);
-            } else {
-                inquirer
-                    .prompt({
-                        choices: categories,
-                        message:
-                            "Select the Category that best fits this block:",
-                        name: "categoryFromList",
-                        type: "list",
-                    })
-                    .then((val: any) => {
-                        const { categoryFromList } = val;
-                        publish(name, categoryFromList);
-                    });
-            }
+                        if (category) {
+                            publish(name, category, categories);
+                        } else {
+                            inquirer
+                                .prompt({
+                                    choices: categories,
+                                    message:
+                                        "Select the Category that best fits this block:",
+                                    name: "categoryFromList",
+                                    type: "list",
+                                })
+                                .then((val: any) => {
+                                    const { categoryFromList } = val;
+                                    publish(name, categoryFromList);
+                                });
+                        }
+                    }
+                });
         }
     });
 
