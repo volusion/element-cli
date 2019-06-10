@@ -10,7 +10,7 @@ import {
     publish,
     release,
     rollback,
-    rollbackDetails,
+    blockDetails,
     update,
 } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
@@ -134,20 +134,17 @@ program
                    You can not rollback if you only have one released block.`
     )
     .action(() => {
-        const versions = rollbackDetails();
+        const versions = blockDetails();
         const { current, name } = versions;
-        const message = `Do you want to rollback ${name} to the previous active release of version ${current}?`;
-        const isConfirmed = "Yes, let's go!";
-
         inquirer
             .prompt({
-                choices: [isConfirmed, "No, stay here."],
-                message,
+                default: true,
+                message: `Do you want to rollback ${name} to the previous active release of version ${current}?\nThis will affect all the stores that have your block installed.\nContinue?`,
                 name: "rollbackConfirmation",
-                type: "list",
+                type: "confirm",
             })
             .then((confirmation: any) => {
-                if (confirmation.rollbackConfirmation === isConfirmed) {
+                if (confirmation.rollbackConfirmation) {
                     rollback();
                 } else {
                     process.exit();
@@ -164,23 +161,23 @@ program
     )
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
-        const isConfirmed = "Yes";
-        const isDenied = "No, let's do this release!";
+        const versions = blockDetails();
+        const { name } = versions;
         inquirer
             .prompt({
-                choices: [isConfirmed, isDenied],
-                message: "Are you releasing a breaking change?",
+                default: true,
+                message: `You are about to release your updates to ${name} to production.\nNon-major version changes will take effect immediately on the stores that have your block installed.\nContinue?`,
                 name: "releaseConfirmation",
-                type: "list",
+                type: "confirm",
             })
             .then((confirmation: any) => {
-                if (confirmation.releaseConfirmation === isConfirmed) {
+                if (confirmation.releaseConfirmation) {
+                    release(note);
+                } else {
                     log(
                         "If you are releasing a breaking change you should create a major release using publish -m"
                     );
                     process.exit();
-                } else {
-                    release(note);
                 }
             });
     });

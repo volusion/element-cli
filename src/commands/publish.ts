@@ -235,7 +235,7 @@ const rollback = async (): Promise<void> => {
     }
 };
 
-const rollbackDetails = (): {
+const blockDetails = (): {
     current: number;
     name: string;
 } => {
@@ -254,4 +254,4 @@ const rollbackDetails = (): {
     };
 };
 
-export { publish, update, release, rollback, rollbackDetails, newMajorVersion };
+export { publish, update, release, rollback, blockDetails, newMajorVersion };
