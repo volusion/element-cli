@@ -6,6 +6,7 @@ import * as inquirer from "inquirer";
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
 import {
+    blockDetails,
     newMajorVersion,
     publish,
     release,
@@ -22,6 +23,9 @@ program
 
 export const isVerbose =
     process.argv.includes("-V") || process.argv.includes("--verbose");
+
+// tslint:disable-next-line: no-console
+const log = console.log;
 
 program
     .command("login")
@@ -130,7 +134,22 @@ program
                    You can not rollback if you only have one released block.`
     )
     .action(() => {
-        rollback();
+        const versions = blockDetails();
+        const { current, name } = versions;
+        inquirer
+            .prompt({
+                default: true,
+                message: `Do you want to rollback ${name} to the previous active release of version ${current}?\nThis will affect all the stores that have your block installed.\nContinue?`,
+                name: "rollbackConfirmation",
+                type: "confirm",
+            })
+            .then((confirmation: any) => {
+                if (confirmation.rollbackConfirmation) {
+                    rollback();
+                } else {
+                    process.exit();
+                }
+            });
     });
 
 program
@@ -142,7 +161,25 @@ program
     )
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
-        release(note);
+        const versions = blockDetails();
+        const { name } = versions;
+        inquirer
+            .prompt({
+                default: true,
+                message: `You are about to release your updates to ${name} to production.\nNon-major version changes will take effect immediately on the stores that have your block installed.\nContinue?`,
+                name: "releaseConfirmation",
+                type: "confirm",
+            })
+            .then((confirmation: any) => {
+                if (confirmation.releaseConfirmation) {
+                    release(note);
+                } else {
+                    log(
+                        'If you are releasing a breaking change you should create a major release using "element publish -m"'
+                    );
+                    process.exit();
+                }
+            });
     });
 
 program.on("command:*", () => {
