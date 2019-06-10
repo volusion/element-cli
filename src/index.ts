@@ -175,7 +175,7 @@ program
                     release(note);
                 } else {
                     log(
-                        "If you are releasing a breaking change you should create a major release using publish -m"
+                        'If you are releasing a breaking change you should create a major release using "element publish -m"'
                     );
                     process.exit();
                 }
