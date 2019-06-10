@@ -6,11 +6,11 @@ import * as inquirer from "inquirer";
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
 import {
+    blockDetails,
     newMajorVersion,
     publish,
     release,
     rollback,
-    blockDetails,
     update,
 } from "./commands/publish";
 import { getCategoryNames, logError, logInfo } from "./utils";
