@@ -24,6 +24,9 @@ program
 export const isVerbose =
     process.argv.includes("-V") || process.argv.includes("--verbose");
 
+// tslint:disable-next-line: no-console
+const log = console.log;
+
 program
     .command("login")
     .description("Log in using your Volusion credentials")
@@ -84,38 +87,24 @@ program
         if (majorVersion) {
             newMajorVersion();
         } else {
-            const breaking = "Yes, breaking change";
-            inquirer
-                .prompt({
-                    choices: ["No", breaking],
-                    message: "Are you making a breaking change?",
-                    name: "breakingChange",
-                    type: "list",
-                })
-                .then(async change => {
-                    if (change === breaking) {
-                        newMajorVersion();
-                    } else {
-                        const categories = await getCategoryNames();
+            const categories = await getCategoryNames();
 
-                        if (category) {
-                            publish(name, category, categories);
-                        } else {
-                            inquirer
-                                .prompt({
-                                    choices: categories,
-                                    message:
-                                        "Select the Category that best fits this block:",
-                                    name: "categoryFromList",
-                                    type: "list",
-                                })
-                                .then((val: any) => {
-                                    const { categoryFromList } = val;
-                                    publish(name, categoryFromList);
-                                });
-                        }
-                    }
-                });
+            if (category) {
+                publish(name, category, categories);
+            } else {
+                inquirer
+                    .prompt({
+                        choices: categories,
+                        message:
+                            "Select the Category that best fits this block:",
+                        name: "categoryFromList",
+                        type: "list",
+                    })
+                    .then((val: any) => {
+                        const { categoryFromList } = val;
+                        publish(name, categoryFromList);
+                    });
+            }
         }
     });
 
@@ -146,8 +135,8 @@ program
     )
     .action(() => {
         const versions = rollbackDetails();
-        const { current, name, target } = versions;
-        const message = `Do you want to rollback ${name} from version ${current} to ${target}?`;
+        const { current, name } = versions;
+        const message = `Do you want to rollback ${name} to the previous active release of version ${current}?`;
         const isConfirmed = "Yes, let's go!";
 
         inquirer
@@ -157,8 +146,8 @@ program
                 name: "rollbackConfirmation",
                 type: "list",
             })
-            .then(confirmation => {
-                if (confirmation === isConfirmed) {
+            .then((confirmation: any) => {
+                if (confirmation.rollbackConfirmation === isConfirmed) {
                     rollback();
                 } else {
                     process.exit();
@@ -175,19 +164,23 @@ program
     )
     .option("-n, --note [note]", "Note attached to the release")
     .action(({ note }: any) => {
-        const isConfirmed = "Yes, to production we go!";
+        const isConfirmed = "Yes";
+        const isDenied = "No, let's do this release!";
         inquirer
             .prompt({
-                choices: [isConfirmed, "No, do not want."],
-                message: "Sure you want to push changes to production?",
-                name: "productionRelease",
+                choices: [isConfirmed, isDenied],
+                message: "Are you releasing a breaking change?",
+                name: "releaseConfirmation",
                 type: "list",
             })
-            .then(confirmation => {
-                if (confirmation === isConfirmed) {
-                    release(note);
-                } else {
+            .then((confirmation: any) => {
+                if (confirmation.releaseConfirmation === isConfirmed) {
+                    log(
+                        "If you are releasing a breaking change you should create a major release using publish -m"
+                    );
                     process.exit();
+                } else {
+                    release(note);
                 }
             });
     });

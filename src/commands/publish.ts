@@ -237,7 +237,6 @@ const rollback = async (): Promise<void> => {
 
 const rollbackDetails = (): {
     current: number;
-    target: number;
     name: string;
 } => {
     validateFilesExistOrExit();
@@ -248,12 +247,10 @@ const rollbackDetails = (): {
     );
 
     const version = activeVersion || 1;
-    const target = version - 1;
 
     return {
         current: version,
         name: displayName,
-        target,
     };
 };
 
