@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { cwd, exit } from "process";
+import * as uglify from "uglify-js";
 
 import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
@@ -39,6 +40,7 @@ const publish = async (
     );
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const minifiedCode = uglify.minify(blockData).code;
     const { git } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
@@ -47,7 +49,7 @@ const publish = async (
                 displayName,
                 publishedName,
             },
-            blockData,
+            minifiedCode,
             category
         );
 
@@ -84,6 +86,7 @@ const newMajorVersion = async (): Promise<void> => {
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const minifiedCode = uglify.minify(blockData).code;
     const { activeVersion, displayName, id, git } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
@@ -100,7 +103,7 @@ const newMajorVersion = async (): Promise<void> => {
         }
 
         const res: AxiosResponse = await createMajorBlockRequest(
-            blockData,
+            minifiedCode,
             id,
             version
         );
@@ -130,12 +133,16 @@ const newMajorVersion = async (): Promise<void> => {
     }
 };
 
-const update = async (togglePublic: boolean): Promise<void> => {
+const update = async (
+    togglePublic: boolean,
+    unminified: boolean
+): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const code = unminified ? blockData : uglify.minify(blockData).code;
     const {
         activeVersion,
         displayName,
@@ -151,7 +158,7 @@ const update = async (togglePublic: boolean): Promise<void> => {
     try {
         const res: AxiosResponse = await updateBlockRequest(
             { displayName, publishedName },
-            blockData,
+            code,
             id,
             publicFlag,
             version
