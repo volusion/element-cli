@@ -112,16 +112,24 @@ program
     .command("update")
     .description(
         `Update your existing block in the Block Theme Registry
-                    [-p, --toggle-public] An optional flag to toggle
-                    whether or not the block is viewable by members
-                    outside of your organization.`
+                    [-p, --toggle-public]
+                        An optional flag to toggle
+                        whether or not the block is viewable by members
+                        outside of your organization. 
+                    [-u, --unminified]
+                        Optionally, do not minify the bundle sent to the server.
+                        Useful for debugging.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
         "Toggle whether or not the block is public."
     )
-    .action(({ togglePublic }: any) => {
-        update(togglePublic);
+    .option(
+        "-u, --unminified [unminified]",
+        "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
+    )
+    .action(({ togglePublic, unminified }) => {
+        update(togglePublic, unminified);
     });
 
 program
