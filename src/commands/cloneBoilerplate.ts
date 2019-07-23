@@ -29,8 +29,8 @@ const removeStarterExtras = (toRemove: string[]): void => {
 
 const updateModuleNames = (name: string): Promise<string[]> => {
     const options = {
-        files: [`${name}/local/index.html`, `${name}/rollup.config.js`],
-        from: /HelloWorldBlock/g,
+        files: [`${name}/local/index.js`],
+        from: /StarterBlock/g,
         to: name,
     };
     return replace(options);
