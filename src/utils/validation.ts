@@ -19,6 +19,12 @@ export const validateInputs = (
     category: string,
     categories?: string[]
 ): { displayName: string; publishedName: string } => {
+    // Commander sends `name` as a function if user does not
+    // provide the name
+    if (typeof name === "function") {
+        logError("The block name is required (-n option).");
+        exit(1);
+    }
     if (!category) {
         logError("Please select or enter a category name.");
         exit(1);
