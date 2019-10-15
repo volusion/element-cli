@@ -11,6 +11,7 @@ import {
     createBlockRequest,
     createBranch,
     createMajorBlockRequest,
+    getMembership,
     logError,
     logSuccess,
     readBlockSettingsFile,
@@ -140,6 +141,19 @@ const update = async (
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
+    const membership = await getMembership();
+    if (
+        togglePublic === true &&
+        (membership === undefined || !membership.name.includes("Volusion"))
+    ) {
+        logError(
+            new Error(
+                "Only Volusion employees are allowed to make a block public"
+            )
+        );
+        exit(1);
+    }
+
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const code = unminified ? blockData : uglify.minify(blockData).code;
@@ -184,6 +198,7 @@ const update = async (
         checkErrorCode(err);
         exit(1);
     }
+    exit(0);
 };
 
 const release = async (note: string): Promise<void> => {

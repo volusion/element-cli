@@ -13,6 +13,7 @@ import {
     prepareImage,
     readTokenFile,
 } from "./index";
+import { MembershipResponse } from "./types";
 
 type HTTPVerbs = "GET" | "POST" | "PUT";
 
@@ -211,6 +212,21 @@ export const getCategoryNames = async (): Promise<string[] | undefined> => {
         logError(`Trouble reaching the categories service: ${err.message}`);
         checkErrorCode(err);
         exit(1);
+    }
+};
+
+export const getMembership = async (): Promise<
+    MembershipResponse | undefined
+> => {
+    try {
+        const url = `${config.blockRegistry.host}/orgs/membership`;
+        return await axios(requestOptions("GET", url)).then(
+            (membership: AxiosResponse) => {
+                return membership.data as MembershipResponse;
+            }
+        );
+    } catch (err) {
+        return undefined;
     }
 };
 

@@ -122,7 +122,7 @@ program
     )
     .option(
         "-p, --toggle-public [togglePublic]",
-        "Toggle whether or not the block is public."
+        "Toggle whether or not the block is public (Volusion employees only)."
     )
     .option(
         "-u, --unminified [unminified]",

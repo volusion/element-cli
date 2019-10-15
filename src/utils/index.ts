@@ -13,6 +13,7 @@ export {
     createMajorBlockRequest,
     getBlockRequest,
     getCategoryNames,
+    getMembership,
     loginRequest,
     updateBlockRequest,
     releaseBlockRequest,
