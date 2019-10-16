@@ -121,10 +121,6 @@ program
                         Useful for debugging.`
     )
     .option(
-        "-p, --toggle-public [togglePublic]",
-        "Toggle whether or not the block is public (Volusion employees only)."
-    )
-    .option(
         "-u, --unminified [unminified]",
         "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
     )
