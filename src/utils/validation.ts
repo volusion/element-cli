@@ -18,7 +18,7 @@ export const validateInputs = (
     name: string | null,
     category: string,
     categories?: string[]
-): { displayName: string; publishedName: string } => {
+): { displayName: string; publishedName: string; id: string } => {
     // Commander sends `name` as a function if user does not
     // provide the name
     if (typeof name === "function") {
@@ -42,16 +42,18 @@ export const validateInputs = (
     const nameFromDotfile = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
         .displayName;
     const displayName = formatName(name || nameFromDotfile);
-    const publishedName = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
-        .publishedName;
+    const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    return { displayName, publishedName };
+    return { displayName, publishedName, id };
 };
 
 export const validateNotAlreadyPublishedOrExit = (): void => {
     const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    if (!!fileContents.id) {
+    if (
+        (!!fileContents.id && !fileContents.idFromStart) ||
+        (fileContents.idFromStart && fileContents.published)
+    ) {
         logError(
             "This block has already been published to staging. Please try running the `update` command to update the contents of this block or run the `release` command to push your block live."
         );

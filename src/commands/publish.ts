@@ -33,7 +33,7 @@ const publish = async (
     validateFilesExistOrExit();
     validateNotAlreadyPublishedOrExit();
 
-    const { displayName, publishedName } = validateInputs(
+    const { displayName, publishedName, id } = validateInputs(
         name,
         category,
         categories
@@ -45,6 +45,7 @@ const publish = async (
 
     try {
         const res: AxiosResponse = await createBlockRequest(
+            id,
             {
                 displayName,
                 publishedName,
@@ -61,6 +62,7 @@ const publish = async (
             displayName,
             id: res.data.id,
             isPublic: false,
+            published: true,
         });
 
         if (git) {
@@ -167,6 +169,7 @@ const update = async (
         updateBlockSettingsFile({
             activeVersion: version,
             isPublic: publicFlag,
+            published: true,
         });
 
         if (git) {

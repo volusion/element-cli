@@ -88,7 +88,6 @@ program
             newMajorVersion();
         } else {
             const categories = await getCategoryNames();
-
             if (category) {
                 publish(name, category, categories);
             } else {

@@ -9,6 +9,7 @@ export { formatName, toPascalCase } from "./formatting";
 export { prepareImage } from "./images";
 export { checkErrorCode, logError, logInfo, logSuccess, logWarn } from "./log";
 export {
+    createBlockId,
     createBlockRequest,
     createMajorBlockRequest,
     getBlockRequest,
