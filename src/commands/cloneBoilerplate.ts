@@ -6,6 +6,7 @@ import * as rimraf from "rimraf";
 import { BLOCK_SETTINGS_FILE } from "../constants";
 import {
     cloneRepo,
+    createBlockId,
     createBlockSettingsFile,
     gitInit,
     logError,
@@ -57,6 +58,8 @@ const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
 
     try {
         await cloneRepo(BOILERPLATE_LOCATION, name);
+        const blockIdRes = await createBlockId();
+        const blockId = blockIdRes.data.blockId;
 
         logInfo(`Saved boilerplate to ./${name}; now updating...`);
 
@@ -69,7 +72,7 @@ const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
 
         const updatedFiles: string[] = await updateModuleNames(name);
 
-        await createBlockSettingsFile(name, git);
+        await createBlockSettingsFile(name, git, blockId);
 
         logSuccess(`Updated files ${updatedFiles.join(", ")}!`);
 

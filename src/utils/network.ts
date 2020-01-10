@@ -55,6 +55,7 @@ const requestOptions = (
 const buildRequestConfig = ({
     category,
     fileData,
+    id,
     isPublic = false,
     method = "POST",
     names,
@@ -62,6 +63,7 @@ const buildRequestConfig = ({
     url,
     note = "",
 }: {
+    id?: string;
     category?: string;
     fileData: string;
     isPublic?: boolean;
@@ -81,6 +83,7 @@ const buildRequestConfig = ({
         ...options,
         data: {
             content: fileData,
+            id,
             metadata: {
                 category,
                 isPublic,
@@ -110,10 +113,19 @@ const buildSimpleRequestConfig = ({
     };
 };
 
+export const createBlockId = (): AxiosPromise =>
+    axios(
+        buildSimpleRequestConfig({
+            method: "POST",
+            url: `${config.blockRegistry.host}/blocks/blockId`,
+        })
+    );
+
 export const getBlockRequest = (id: string): AxiosPromise =>
     axios(requestOptions("GET", `${config.blockRegistry.host}/blocks/${id}`));
 
 export const createBlockRequest = (
+    id: string,
     names: {
         displayName: string;
         publishedName: string;
@@ -125,6 +137,7 @@ export const createBlockRequest = (
         buildRequestConfig({
             category,
             fileData,
+            id,
             method: "POST",
             names,
             url: `${config.blockRegistry.host}/blocks`,
