@@ -53,13 +53,9 @@ program
 
 program
     .command("new <name>")
-    .description(
-        `Create the block boilerplate
-                    [-g, --git]`
-    )
-    .option("-g, --git [git]", "Use git to manage major block versions")
-    .action((name, { git }) => {
-        cloneBoilerplate(name, git);
+    .description(`Create the block boilerplate`)
+    .action(name => {
+        cloneBoilerplate(name);
     });
 
 program
@@ -85,7 +81,20 @@ program
     )
     .action(async ({ name, category, majorVersion }) => {
         if (majorVersion) {
-            newMajorVersion();
+            inquirer
+                .prompt({
+                    default: true,
+                    message: `Are you sure you want to create a new major release? Make sure you have ways to update your current block version if you need to`,
+                    name: "majorConfirmation",
+                    type: "confirm",
+                })
+                .then((confirmation: any) => {
+                    if (confirmation.majorConfirmation) {
+                        newMajorVersion();
+                    } else {
+                        process.exit();
+                    }
+                });
         } else {
             const categories = await getCategoryNames();
             if (category) {
