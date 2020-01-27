@@ -84,7 +84,7 @@ program
             inquirer
                 .prompt({
                     default: true,
-                    message: `Are you sure you want to create a new major release? Make sure you have ways to update your current block version if you need to`,
+                    message: `Are you sure you want to create a new major release? We recommend tagging your major releases and creating new branches from them for future updates.`,
                     name: "majorConfirmation",
                     type: "confirm",
                 })
