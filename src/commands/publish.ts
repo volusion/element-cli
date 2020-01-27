@@ -6,10 +6,8 @@ import * as uglify from "uglify-js";
 
 import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
-    branchLookup,
     checkErrorCode,
     createBlockRequest,
-    createBranch,
     createMajorBlockRequest,
     logError,
     logSuccess,
@@ -18,7 +16,6 @@ import {
     rollbackBlockRequest,
     updateBlockRequest,
     updateBlockSettingsFile,
-    updateBranch,
     validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateInputs,
@@ -41,7 +38,6 @@ const publish = async (
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const minifiedCode = uglify.minify(blockData).code;
-    const { git } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
         const res: AxiosResponse = await createBlockRequest(
@@ -65,10 +61,6 @@ const publish = async (
             published: true,
         });
 
-        if (git) {
-            await createBranch(`v${version}`);
-        }
-
         logSuccess(`
             Published ${displayName} v${version} for staging
             ID ${res.data.id}
@@ -89,38 +81,22 @@ const newMajorVersion = async (): Promise<void> => {
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const minifiedCode = uglify.minify(blockData).code;
-    const { activeVersion, displayName, id, git } = readBlockSettingsFile(
+    const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
 
     const version = (activeVersion || 1) + 1;
 
     try {
-        const isBranch = await branchLookup(`v${version}`);
-
-        if (isBranch) {
-            throw new Error(
-                `v${version} already exists, please checkout v${version} branch to publish a new major version`
-            );
-        }
-
         const res: AxiosResponse = await createMajorBlockRequest(
             minifiedCode,
             id,
             version
         );
 
-        if (git) {
-            await createBranch(`v${version}`);
-        }
-
         updateBlockSettingsFile({
             activeVersion: version,
         });
-
-        if (git) {
-            await updateBranch(`v${version}`);
-        }
 
         logSuccess(`
             Published ${displayName} v${version} for staging
@@ -151,7 +127,6 @@ const update = async (
         id,
         isPublic,
         publishedName,
-        git,
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
@@ -171,10 +146,6 @@ const update = async (
             isPublic: publicFlag,
             published: true,
         });
-
-        if (git) {
-            await updateBranch(`v${version}`);
-        }
 
         logSuccess(`
             Updated ${displayName} v${version} for staging

@@ -13,7 +13,6 @@ export interface BlockFileObject {
     publishedName: string;
     published?: boolean; // Since v.2.0.8
     activeVersion?: number;
-    git?: boolean;
 }
 
 type UpdateData = Partial<BlockFileObject>;
@@ -27,17 +26,12 @@ const writeFileUtil = (path: string, data: any): void => {
     }
 };
 
-export const createBlockSettingsFile = (
-    name: string,
-    git: boolean,
-    id: string
-): void => {
+export const createBlockSettingsFile = (name: string, id: string): void => {
     const displayName = formatName(name);
 
     const data = JSON.stringify({
         activeVersion: 1,
         displayName,
-        git,
         id,
         idFromStart: true, // Since v.2.0.8
         publishedName: name,

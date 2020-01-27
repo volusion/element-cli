@@ -8,7 +8,6 @@ import {
     cloneRepo,
     createBlockId,
     createBlockSettingsFile,
-    gitInit,
     logError,
     logInfo,
     logSuccess,
@@ -37,7 +36,7 @@ const updateModuleNames = (name: string): Promise<string[]> => {
     return replace(options);
 };
 
-const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
+const cloneBoilerplate = async (name: string): Promise<void> => {
     name = toPascalCase(name);
 
     logInfo(`Cloning boilerplate for ${name}...`);
@@ -72,14 +71,9 @@ const cloneBoilerplate = async (name: string, git: boolean): Promise<void> => {
 
         const updatedFiles: string[] = await updateModuleNames(name);
 
-        await createBlockSettingsFile(name, git, blockId);
+        await createBlockSettingsFile(name, blockId);
 
         logSuccess(`Updated files ${updatedFiles.join(", ")}!`);
-
-        if (git) {
-            await gitInit(name);
-            logSuccess(`Initalized git repo.`);
-        }
 
         exit(0);
     } catch (err) {
