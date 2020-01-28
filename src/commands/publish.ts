@@ -1,8 +1,12 @@
 import { AxiosResponse } from "axios";
+import { exec } from "child_process";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { cwd, exit } from "process";
 import * as uglify from "uglify-js";
+import * as util from "util";
+
+const execAsyc = util.promisify(exec);
 
 import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
 import {
@@ -88,6 +92,12 @@ const newMajorVersion = async (): Promise<void> => {
     const version = (activeVersion || 1) + 1;
 
     try {
+        updateBlockSettingsFile({
+            activeVersion: version,
+        });
+
+        await execAsyc("npm run build");
+
         const res: AxiosResponse = await createMajorBlockRequest(
             minifiedCode,
             id,
@@ -105,6 +115,9 @@ const newMajorVersion = async (): Promise<void> => {
 
         exit(0);
     } catch (err) {
+        updateBlockSettingsFile({
+            activeVersion: activeVersion || 1,
+        });
         logError(err);
         checkErrorCode(err);
         exit(1);
