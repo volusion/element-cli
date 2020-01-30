@@ -1,6 +1,6 @@
 {
   "name": "@volusion/element-cli",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Command line interface for the Volusion Element ecosystem",
   "author": "Volusion LLC",
   "main": "bin/src/index.js",
@@ -24,7 +24,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "axios": "0.18.x",
+    "axios": "^0.18.1",
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "inquirer": "^6.2.0",
