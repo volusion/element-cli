@@ -83,8 +83,6 @@ const newMajorVersion = async (): Promise<void> => {
     validateBlockExistOrExit();
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
-    const blockData = readFileSync(filePath).toString();
-    const minifiedCode = uglify.minify(blockData).code;
     const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
@@ -97,6 +95,9 @@ const newMajorVersion = async (): Promise<void> => {
         });
 
         await execAsyc("npm run build");
+
+        const blockData = readFileSync(filePath).toString();
+        const minifiedCode = uglify.minify(blockData).code;
 
         const res: AxiosResponse = await createMajorBlockRequest(
             minifiedCode,
