@@ -30,7 +30,11 @@
             "call-signature",
             "parameter",
             "member-variable-declaration"
-        ]
+        ],
+        "no-focused-test": true
     },
-    "rulesDirectory": ["./node_modules/tslint-microsoft-contrib"]
+    "rulesDirectory": [
+        "./node_modules/tslint-microsoft-contrib",
+        "./node_modules/tslint-no-focused-test/dist"
+    ]
 }
