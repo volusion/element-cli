@@ -61,6 +61,7 @@ const buildRequestConfig = ({
     names,
     version,
     url,
+    defaultConfig,
     note = "",
 }: {
     id?: string;
@@ -74,6 +75,7 @@ const buildRequestConfig = ({
     };
     version?: number;
     url: string;
+    defaultConfig: { [key: string]: any };
     note?: string;
 }): AxiosRequestConfig => {
     const options = requestOptions(method as HTTPVerbs, url);
@@ -83,6 +85,7 @@ const buildRequestConfig = ({
         ...options,
         data: {
             content: fileData,
+            defaultConfig,
             id,
             metadata: {
                 category,
@@ -125,6 +128,7 @@ export const getBlockRequest = (id: string): AxiosPromise =>
     axios(requestOptions("GET", `${config.blockRegistry.host}/blocks/${id}`));
 
 export const createBlockRequest = (
+    defaultConfig: { [key: string]: any },
     id: string,
     names: {
         displayName: string;
@@ -136,6 +140,7 @@ export const createBlockRequest = (
     axios(
         buildRequestConfig({
             category,
+            defaultConfig,
             fileData,
             id,
             method: "POST",
@@ -145,6 +150,7 @@ export const createBlockRequest = (
     );
 
 export const updateBlockRequest = (
+    defaultConfig: { [key: string]: any },
     names: {
         displayName: string;
         publishedName: string;
@@ -156,6 +162,7 @@ export const updateBlockRequest = (
 ): AxiosPromise =>
     axios(
         buildRequestConfig({
+            defaultConfig,
             fileData,
             isPublic,
             method: "PUT",
@@ -166,6 +173,7 @@ export const updateBlockRequest = (
     );
 
 export const createMajorBlockRequest = (
+    defaultConfig: { [key: string]: any },
     content: string,
     id: string,
     version: number
@@ -174,6 +182,7 @@ export const createMajorBlockRequest = (
         buildSimpleRequestConfig({
             data: {
                 content,
+                defaultConfig,
                 version,
             },
             method: "POST",

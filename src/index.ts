@@ -16,7 +16,7 @@ import {
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
-    .version("3.0.2", "-v, --version")
+    .version("3.0.3", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
@@ -90,7 +90,8 @@ program
                 })
                 .then((confirmation: any) => {
                     if (confirmation.majorConfirmation) {
-                        newMajorVersion();
+                        // tslint:disable-next-line: no-console
+                        newMajorVersion().catch(e => console.error(e.message));
                     } else {
                         process.exit();
                     }
@@ -110,7 +111,10 @@ program
                     })
                     .then((val: any) => {
                         const { categoryFromList } = val;
-                        publish(name, categoryFromList);
+                        publish(name, categoryFromList).catch(e =>
+                            // tslint:disable-next-line: no-console
+                            console.error(e.message)
+                        );
                     });
             }
         }
@@ -137,7 +141,8 @@ program
         "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
     )
     .action(({ togglePublic, unminified }) => {
-        update(togglePublic, unminified);
+        // tslint:disable-next-line: no-console
+        update(togglePublic, unminified).catch(e => console.error(e.message));
     });
 
 program
