@@ -8,7 +8,11 @@ import * as util from "util";
 
 const execAsyc = util.promisify(exec);
 
-import { BLOCK_SETTINGS_FILE, BUILT_FILE_PATH } from "../constants";
+import {
+    BLOCK_SETTINGS_FILE,
+    BUILT_FILE_PATH,
+    USER_DEFINED_BLOCK_CONFIG_FILE,
+} from "../constants";
 import {
     checkErrorCode,
     createBlockRequest,
@@ -41,10 +45,12 @@ const publish = async (
     );
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
     const minifiedCode = uglify.minify(blockData).code;
 
     try {
         const res: AxiosResponse = await createBlockRequest(
+            defaultConfig,
             id,
             {
                 displayName,
@@ -82,6 +88,7 @@ const newMajorVersion = async (): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
+    const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
@@ -100,6 +107,7 @@ const newMajorVersion = async (): Promise<void> => {
         const minifiedCode = uglify.minify(blockData).code;
 
         const res: AxiosResponse = await createMajorBlockRequest(
+            defaultConfig,
             minifiedCode,
             id,
             version
@@ -134,6 +142,8 @@ const update = async (
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
+    const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
+
     const code = unminified ? blockData : uglify.minify(blockData).code;
     const {
         activeVersion,
@@ -148,6 +158,7 @@ const update = async (
 
     try {
         const res: AxiosResponse = await updateBlockRequest(
+            defaultConfig,
             { displayName, publishedName },
             code,
             id,
