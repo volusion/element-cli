@@ -15,9 +15,15 @@ interface AuthConstants {
 }
 
 const devAuthConfig: AuthConfig = {
-    auth0Audience: "https://sandbox.api.material.com",
-    auth0ClientId: "ffh6DBHImNf7ZoTlL0sRmQU3EQ2iDuUx",
-    loginUrl: "https://materialsandbox.auth0.com/oauth/token",
+    auth0Audience:
+        process.env.ELEMENT_DEV_AUTH0_AUDIENCE ||
+        "https://sandbox.api.material.com",
+    auth0ClientId:
+        process.env.ELEMENT_DEV_AUTH0_CLIENT_ID ||
+        "ffh6DBHImNf7ZoTlL0sRmQU3EQ2iDuUx",
+    loginUrl:
+        process.env.ELEMENT_DEV_LOGIN_URL ||
+        "https://materialsandbox.auth0.com/oauth/token",
 };
 
 const prodAuthConfig: AuthConfig = {
