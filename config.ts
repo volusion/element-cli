@@ -14,16 +14,15 @@ interface AuthConstants {
     scope: string;
 }
 
-const devAuthConfig: AuthConfig = {
-    auth0Audience: "https://sandbox.api.material.com",
-    auth0ClientId: "ffh6DBHImNf7ZoTlL0sRmQU3EQ2iDuUx",
-    loginUrl: "https://materialsandbox.auth0.com/oauth/token",
-};
-
-const prodAuthConfig: AuthConfig = {
-    auth0Audience: "https://api.material.com/",
-    auth0ClientId: "wklYa7h557v4NT4XZsH3epPYzKEtkPrZ",
-    loginUrl: "https://material.auth0.com/oauth/token",
+const authConfig: AuthConfig = {
+    auth0Audience:
+        process.env.ELEMENT_AUTH0_AUDIENCE || "https://api.material.com/",
+    auth0ClientId:
+        process.env.ELEMENT_AUTH0_CLIENT_ID ||
+        "wklYa7h557v4NT4XZsH3epPYzKEtkPrZ",
+    loginUrl:
+        process.env.ELEMENT_LOGIN_URL ||
+        "https://material.auth0.com/oauth/token",
 };
 
 const config: Config = {
@@ -41,7 +40,7 @@ const authInformation: AuthConfig & AuthConstants = Object.assign(
         realm: "Username-Password-Authentication",
         scope: "openid profile",
     },
-    process.env.VOL_CLI_DEV ? devAuthConfig : prodAuthConfig
+    authConfig
 );
 
 const activeConfig: Config & AuthConfig & AuthConstants = Object.assign(

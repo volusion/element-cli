@@ -251,7 +251,10 @@ export const loginRequest = (
     };
 
     if (isVerbose) {
-        logInfo(`\nRequesting ${config.loginUrl}...\n\n`);
+        logInfo(`\nRequesting ${config.loginUrl}...`);
+        logInfo(
+            `with data ${JSON.stringify({ ...data, password: "*****" })}\n\n`
+        );
     }
 
     return axios({ data, method: "POST", url: config.loginUrl });
