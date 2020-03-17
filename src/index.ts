@@ -16,7 +16,7 @@ import {
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
-    .version("3.0.3", "-v, --version")
+    .version("3.0.4", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
@@ -127,7 +127,7 @@ program
                     [-p, --toggle-public]
                         An optional flag to toggle
                         whether or not the block is viewable by members
-                        outside of your organization. 
+                        outside of your organization.
                     [-u, --unminified]
                         Optionally, do not minify the bundle sent to the server.
                         Useful for debugging.`
