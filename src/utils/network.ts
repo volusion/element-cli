@@ -253,10 +253,7 @@ export const loginRequest = (
     if (isVerbose) {
         logInfo(`\nRequesting ${config.loginUrl}...`);
         logInfo(
-            `with data: ${JSON.stringify(data).replace(
-                /"password":"([^,]*),/,
-                ""
-            )}\n\n`
+            `with data ${JSON.stringify({ ...data, password: "*****" })}\n\n`
         );
     }
 
