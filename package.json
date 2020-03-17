@@ -47,6 +47,7 @@
   },
   "scripts": {
     "build": "tsc --pretty",
+    "build:watch": "tsc --watch --pretty",
     "doc": "mmdc -i docs/*.mmd",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "lint:fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
