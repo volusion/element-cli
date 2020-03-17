@@ -56,8 +56,8 @@ const cloneBoilerplate = async (name: string): Promise<void> => {
     }
 
     try {
-        await cloneRepo(BOILERPLATE_LOCATION, name);
         const blockIdRes = await createBlockId();
+        await cloneRepo(BOILERPLATE_LOCATION, name);
         const blockId = blockIdRes.data.blockId;
 
         logInfo(`Saved boilerplate to ./${name}; now updating...`);
@@ -78,6 +78,7 @@ const cloneBoilerplate = async (name: string): Promise<void> => {
         exit(0);
     } catch (err) {
         logError(err);
+        logInfo("Hint: Try `element login` before running this command again.");
         exit(1);
     }
 };
