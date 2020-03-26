@@ -96,6 +96,8 @@ and your updated code will be used next time you call the CLI.
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/volusion/element-cli/tags).
 
+For pull requests, please update the version in [package.json](package.json) and the program version in [index.ts](src/index.ts)
+
 ## Generating Diagrams
 
 Run this command to generate .svg files from any .mmd files in the `docs/` folder.
