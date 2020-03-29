@@ -32,7 +32,10 @@ program
     .description(
         `Log in using your Volusion credentials
                     [-u, --username USERNAME]
-                    [-p, --password PASSWORD]`
+                    [-p, --password PASSWORD]
+                        You may need to wrap your password in single quotes
+                        and\\or escape special characters with a backslash \\
+                        Keep in mind that using a password in the terminal can be insecure.`
     )
     .option("-u, --username [username]", "Volusion username")
     .option("-p, --password [password]", "Volusion password")
@@ -41,22 +44,22 @@ program
         if (!username) {
             prompts.push({
                 message: "Enter your username",
-                name: "user",
+                name: "usernameInput",
                 type: "input",
             });
         }
         if (!password) {
             prompts.push({
                 message: "Enter your password",
-                name: "pass",
+                name: "passwordInput",
                 type: "password",
             });
         }
         inquirer
             .prompt(prompts)
             .then((val: any) => {
-                const { user, pass } = val;
-                login(user || username, pass || password);
+                const { usernameInput, passwordInput } = val;
+                login(username || usernameInput, password || passwordInput);
             })
             .catch(logError);
     });
