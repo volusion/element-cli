@@ -29,24 +29,34 @@ const log = console.log;
 
 program
     .command("login")
-    .description("Log in using your Volusion credentials")
-    .action(() => {
+    .description(
+        `Log in using your Volusion credentials
+                    [-u, --username USERNAME]
+                    [-p, --password PASSWORD]`
+    )
+    .option("-u, --username [username]", "Volusion username")
+    .option("-p, --password [password]", "Volusion password")
+    .action(({ username, password }) => {
+        const prompts = [];
+        if (!username) {
+            prompts.push({
+                message: "Enter your username",
+                name: "user",
+                type: "input",
+            });
+        }
+        if (!password) {
+            prompts.push({
+                message: "Enter your password",
+                name: "pass",
+                type: "password",
+            });
+        }
         inquirer
-            .prompt([
-                {
-                    message: "Enter your username",
-                    name: "username",
-                    type: "input",
-                },
-                {
-                    message: "Enter your password",
-                    name: "password",
-                    type: "password",
-                },
-            ])
+            .prompt(prompts)
             .then((val: any) => {
-                const { username, password } = val;
-                login(username, password);
+                const { user, pass } = val;
+                login(user || username, pass || password);
             })
             .catch(logError);
     });
@@ -62,7 +72,9 @@ program
     .command("publish")
     .description(
         `Publish a block to the Block Theme Registry
-                    [-n, --name NAME] [-c, --category CATEGORY] [-m, --major-version]
+                    [-n, --name NAME]
+                    [-c, --category CATEGORY]
+                    [-m, --major-version]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
