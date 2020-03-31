@@ -16,7 +16,7 @@ import {
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
-    .version("3.0.5", "-v, --version")
+    .version("3.0.6", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
@@ -29,24 +29,37 @@ const log = console.log;
 
 program
     .command("login")
-    .description("Log in using your Volusion credentials")
-    .action(() => {
+    .description(
+        `Log in using your Volusion credentials
+                    [-u, --username USERNAME]
+                    [-p, --password PASSWORD]
+                        You may need to wrap your password in single quotes
+                        and\\or escape special characters with a backslash \\
+                        Keep in mind that using a password in the terminal can be insecure.`
+    )
+    .option("-u, --username [username]", "Volusion username")
+    .option("-p, --password [password]", "Volusion password")
+    .action(({ username, password }) => {
+        const prompts = [];
+        if (!username) {
+            prompts.push({
+                message: "Enter your username",
+                name: "usernameInput",
+                type: "input",
+            });
+        }
+        if (!password) {
+            prompts.push({
+                message: "Enter your password",
+                name: "passwordInput",
+                type: "password",
+            });
+        }
         inquirer
-            .prompt([
-                {
-                    message: "Enter your username",
-                    name: "username",
-                    type: "input",
-                },
-                {
-                    message: "Enter your password",
-                    name: "password",
-                    type: "password",
-                },
-            ])
+            .prompt(prompts)
             .then((val: any) => {
-                const { username, password } = val;
-                login(username, password);
+                const { usernameInput, passwordInput } = val;
+                login(username || usernameInput, password || passwordInput);
             })
             .catch(logError);
     });
@@ -62,7 +75,9 @@ program
     .command("publish")
     .description(
         `Publish a block to the Block Theme Registry
-                    [-n, --name NAME] [-c, --category CATEGORY] [-m, --major-version]
+                    [-n, --name NAME]
+                    [-c, --category CATEGORY]
+                    [-m, --major-version]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
