@@ -26,15 +26,13 @@ npm install -g @volusion/element-cli
 
 The command for logging into the Element ecosystem. This is necessary for publishing and updating [blocks](https://github.com/volusion/element-tutorial#vocabulary).
 
-Use the same credentials you use to log into your [Volusion store admin](https://admin.volusion.com).
+Use the same credentials you use to log into your [Volusion store admin](https://admin.volusion.com). You may optionally pass in username from the command line:  `element --username email@email.com`
 
 * * *
 
-### `element new NAME --git`
+### `element new NAME`
 
 The command for scaffolding a new block. The command will clone the [Element Block Starter repo](https://github.com/volusion/element-blockstarter), allowing you to quickly get started with your development process. The NAME passed in will be converted to PascalCase.
-
-You can use the optional `--git` flag to let git handle your block commits and major versions.
 
 * * *
 

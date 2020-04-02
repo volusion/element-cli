@@ -31,11 +31,7 @@ program
     .command("login")
     .description(
         `Log in using your Volusion credentials
-                    [-u, --username USERNAME]
-                    [-p, --password PASSWORD]
-                        You may need to wrap your password in single quotes
-                        and\\or escape special characters with a backslash \\
-                        Keep in mind that using a password in the terminal can be insecure.`
+                    [-u, --username USERNAME]`
     )
     .option("-u, --username [username]", "Volusion username")
     .option("-p, --password [password]", "Volusion password")

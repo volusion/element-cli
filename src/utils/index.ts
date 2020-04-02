@@ -23,7 +23,6 @@ export {
     validateInputs,
     validateBlockExistOrExit,
     validateFilesExistOrExit,
-    validateNotAlreadyPublishedOrExit,
 } from "./validation";
 
 export { cloneRepo } from "./git";

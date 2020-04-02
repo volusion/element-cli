@@ -6,7 +6,7 @@ import { cwd, exit } from "process";
 import * as uglify from "uglify-js";
 import * as util from "util";
 
-const execAsyc = util.promisify(exec);
+const execAsync = util.promisify(exec);
 
 import {
     BLOCK_SETTINGS_FILE,
@@ -27,7 +27,6 @@ import {
     validateBlockExistOrExit,
     validateFilesExistOrExit,
     validateInputs,
-    validateNotAlreadyPublishedOrExit,
 } from "../utils";
 
 const publish = async (
@@ -36,7 +35,6 @@ const publish = async (
     categories?: string[]
 ): Promise<void> => {
     validateFilesExistOrExit();
-    validateNotAlreadyPublishedOrExit();
 
     const { displayName, publishedName, id } = validateInputs(
         name,
@@ -101,7 +99,7 @@ const newMajorVersion = async (): Promise<void> => {
             activeVersion: version,
         });
 
-        await execAsyc("npm run build");
+        await execAsync("npm run build");
 
         const blockData = readFileSync(filePath).toString();
         const minifiedCode = uglify.minify(blockData).code;
