@@ -227,7 +227,7 @@ const rollback = async (): Promise<void> => {
         const res: AxiosResponse = await rollbackBlockRequest(id, version);
 
         logSuccess(`
-            Rollbacked ${displayName} v${version}
+            Rolled back ${displayName} v${version}
             ID ${res.data.id}
         `);
 
