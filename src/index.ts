@@ -17,7 +17,7 @@ import {
 import { getCategoryNames, logError, logInfo } from "./utils";
 
 program
-    .version("3.0.8", "-v, --version")
+    .version("3.0.9", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
