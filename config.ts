@@ -28,7 +28,7 @@ const authConfig: AuthConfig = {
 const config: Config = {
     blockRegistry: {
         host:
-            process.env.BLOCK_REGISTRY_URI ||
+            process.env.ELEMENT_BLOCK_REGISTRY_URI ||
             "https://btr.v2-prod.volusion.com",
     },
 };
