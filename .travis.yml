@@ -7,12 +7,15 @@ install:
 matrix:
     fast_finish: true
     include:
-        - name: 'Tsc'
+        - name: 'npm audit'
+          script:
+              - npm run audit:ci
+        - name: 'compile Typescript'
           script:
               - npm run build
-        - name: 'Lint'
+        - name: 'lint'
           script:
               - npm run lint
-        - name: 'Tests'
+        - name: 'test'
           script:
               - npm test
