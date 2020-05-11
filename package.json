@@ -1,6 +1,6 @@
 {
   "name": "@volusion/element-cli",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "Command line interface for the Volusion Element ecosystem",
   "author": "Volusion, LLC",
   "main": "bin/src/index.js",
@@ -37,11 +37,12 @@
     "@types/nodegit": "^0.24.4",
     "@types/rimraf": "^2.0.2",
     "@types/uglify-js": "^3.0.4",
+    "audit-ci": "^3.0.0",
     "husky": "^0.14.3",
     "jest": "^25.1.0",
     "mermaid.cli": "^0.5.1",
     "prettier": "^1.14.0",
-    "ts-jest": "^25.2.1",
+    "ts-jest": "^25.5.1",
     "tslint": "^5.10.0",
     "tslint-config-prettier": "^1.14.0",
     "tslint-microsoft-contrib": "^6.0.0",
@@ -50,6 +51,7 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
+    "audit:ci": "audit-ci --high",
     "build": "tsc --pretty",
     "build:watch": "tsc --watch --pretty",
     "doc": "mmdc -i docs/*.mmd",
