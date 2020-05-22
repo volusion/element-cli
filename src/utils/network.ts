@@ -175,15 +175,13 @@ export const updateBlockRequest = (
 export const createMajorBlockRequest = (
     defaultConfig: { [key: string]: any },
     content: string,
-    id: string,
-    version: number
+    id: string
 ): AxiosPromise =>
     axios(
         buildSimpleRequestConfig({
             data: {
                 content,
                 defaultConfig,
-                version,
             },
             method: "POST",
             url: `${config.blockRegistry.host}/blocks/${id}/major`,

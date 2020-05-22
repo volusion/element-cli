@@ -88,17 +88,9 @@ const newMajorVersion = async (): Promise<void> => {
 
     const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
-    const { activeVersion, displayName, id } = readBlockSettingsFile(
-        BLOCK_SETTINGS_FILE
-    );
-
-    const version = (activeVersion || 1) + 1;
+    const { displayName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
-        updateBlockSettingsFile({
-            activeVersion: version,
-        });
-
         await execAsync("npm run build");
 
         const blockData = readFileSync(filePath).toString();
@@ -107,24 +99,25 @@ const newMajorVersion = async (): Promise<void> => {
         const res: AxiosResponse = await createMajorBlockRequest(
             defaultConfig,
             minifiedCode,
-            id,
-            version
+            id
         );
+        const newVersion =
+            res.data.versions.reduce((accMax: any, item: any) => {
+                return item.isMajor && item.isActive
+                    ? Math.max(accMax, item.version)
+                    : accMax;
+            }, 1) || 1;
 
         updateBlockSettingsFile({
-            activeVersion: version,
+            activeVersion: newVersion,
         });
 
         logSuccess(`
-            Published ${displayName} v${version} for staging
+            Published ${displayName} v${newVersion} for staging
             ID ${res.data.id}
         `);
-
         exit(0);
     } catch (err) {
-        updateBlockSettingsFile({
-            activeVersion: activeVersion || 1,
-        });
         logError(err);
         checkErrorCode(err);
         exit(1);
