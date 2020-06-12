@@ -20,6 +20,7 @@ import {
     getCategoryNames,
     logError,
     logInfo,
+    logWarn,
     readBlockSettingsFile,
 } from "./utils";
 
@@ -81,9 +82,15 @@ program
     });
 program
     .command("info")
-    .description("Block Metadata Info")
+    .description("View block metadata information from server")
     .action(async () => {
-        const { id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+        const { id, published } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+        if (!published) {
+            logWarn(
+                "You must first publish your block to view server information."
+            );
+            process.exit(1);
+        }
         const block = await getBlockRequest(id).catch((err: Error) => {
             logError(err);
             process.exit(1);
