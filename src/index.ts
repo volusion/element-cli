@@ -14,10 +14,18 @@ import {
     rollback,
     update,
 } from "./commands/publish";
-import { getCategoryNames, logError, logInfo } from "./utils";
+import { BLOCK_SETTINGS_FILE } from "./constants";
+import {
+    getBlockRequest,
+    getCategoryNames,
+    logError,
+    logInfo,
+    logWarn,
+    readBlockSettingsFile,
+} from "./utils";
 
 program
-    .version("3.0.10", "-v, --version")
+    .version("3.1.0", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
@@ -71,6 +79,24 @@ program
     .action(async () => {
         const categories = await getCategoryNames();
         logInfo((categories || []).join("\n"));
+    });
+program
+    .command("info")
+    .description("View block metadata information from server")
+    .action(async () => {
+        const { id, published } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+        if (!published) {
+            logWarn(
+                "You must first publish your block to view server information."
+            );
+            process.exit(1);
+        }
+        const block = await getBlockRequest(id).catch((err: Error) => {
+            logError(err);
+            process.exit(1);
+        });
+        logInfo("Block metadata:");
+        logInfo(JSON.stringify(block.data.metadata, null, 2));
     });
 
 program
