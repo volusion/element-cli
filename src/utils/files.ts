@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { exit } from "process";
 
 import { BLOCK_SETTINGS_FILE, RC_FILE_PATH } from "../constants";
@@ -42,6 +42,10 @@ export const createBlockSettingsFile = (name: string, id: string): void => {
 
 export const writeTokenFile = (data: string): void => {
     writeFileUtil(RC_FILE_PATH, data);
+};
+
+export const deleteTokenFile = (): void => {
+    unlinkSync(RC_FILE_PATH);
 };
 
 export const readBlockSettingsFile = (path: string): BlockFileObject => {

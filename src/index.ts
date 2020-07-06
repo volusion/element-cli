@@ -6,6 +6,7 @@ import { exit } from "process";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
+import { logout } from "./commands/logout";
 import {
     blockDetails,
     newMajorVersion,
@@ -64,6 +65,13 @@ program
                 login(username || usernameInput, password || passwordInput);
             })
             .catch(logError);
+    });
+
+program
+    .command("logout")
+    .description("Log out the cli")
+    .action(() => {
+        logout();
     });
 
 program

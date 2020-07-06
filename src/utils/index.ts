@@ -2,6 +2,7 @@ export {
     createBlockSettingsFile,
     readBlockSettingsFile,
     readTokenFile,
+    deleteTokenFile,
     updateBlockSettingsFile,
     writeTokenFile,
 } from "./files";
