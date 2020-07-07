@@ -107,19 +107,16 @@ const newMajorVersion = async (): Promise<void> => {
             minifiedCode,
             id
         );
-        const newVersion =
-            res.data.versions.reduce((accMax: any, item: any) => {
-                return item.isMajor ? Math.max(accMax, item.version) : accMax;
-            }, 1) || 1;
-
         logResponse(res);
 
+        const latestMajorVersion = getLatestMajorVersion(res.data.versions);
+
         updateBlockSettingsFile({
-            activeVersion: newVersion,
+            activeVersion: latestMajorVersion,
         });
 
         logSuccess(`
-            Published ${displayName} v${newVersion} for staging
+            Published ${displayName} v${latestMajorVersion} for staging
             ID ${res.data.id}
         `);
         exit(0);
@@ -268,6 +265,14 @@ const blockDetails = (): {
 };
 
 export { publish, update, release, rollback, blockDetails, newMajorVersion };
+
+function getLatestMajorVersion(versions: any[]): number {
+    return (
+        versions.reduce((accMax: any, item: any) => {
+            return item.isMajor ? Math.max(accMax, item.version) : accMax;
+        }, 1) || 1
+    );
+}
 
 async function runBuild(): Promise<void> {
     if (isVerbose) {
