@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "fs";
 import { exit } from "process";
 
 import { BLOCK_SETTINGS_FILE, RC_FILE_PATH } from "../constants";
@@ -44,6 +44,10 @@ export const writeTokenFile = (data: string): void => {
     writeFileUtil(RC_FILE_PATH, data);
 };
 
+export const deleteTokenFile = (): void => {
+    unlinkSync(RC_FILE_PATH);
+};
+
 export const readBlockSettingsFile = (path: string): BlockFileObject => {
     return JSON.parse(readFile(path)!);
 };
@@ -70,4 +74,11 @@ const createDataString = (latestData: UpdateData): string => {
 export const updateBlockSettingsFile = (latestData: UpdateData): void => {
     const updatedDataString = createDataString(latestData);
     writeFileUtil(BLOCK_SETTINGS_FILE, updatedDataString);
+};
+
+export const isLoggedInOrExit = (): void => {
+    if (!existsSync(RC_FILE_PATH)) {
+        logError("You have been logged out. Please run 'element login'");
+        exit(1);
+    }
 };

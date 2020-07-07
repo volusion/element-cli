@@ -6,6 +6,7 @@ import { exit } from "process";
 
 import { cloneBoilerplate } from "./commands/cloneBoilerplate";
 import { login } from "./commands/login";
+import { logout } from "./commands/logout";
 import {
     blockDetails,
     newMajorVersion,
@@ -18,6 +19,7 @@ import { BLOCK_SETTINGS_FILE } from "./constants";
 import {
     getBlockRequest,
     getCategoryNames,
+    isLoggedInOrExit,
     logError,
     logInfo,
     logWarn,
@@ -67,9 +69,19 @@ program
     });
 
 program
+    .command("logout")
+    .description("Log out of the cli")
+    .action(() => {
+        isLoggedInOrExit();
+        logout();
+    });
+
+program
     .command("new <name>")
     .description(`Create the block boilerplate`)
     .action(name => {
+        isLoggedInOrExit();
+
         cloneBoilerplate(name);
     });
 
@@ -77,6 +89,7 @@ program
     .command("categories")
     .description("List categories")
     .action(async () => {
+        isLoggedInOrExit();
         const categories = await getCategoryNames();
         logInfo((categories || []).join("\n"));
     });
@@ -84,6 +97,7 @@ program
     .command("info")
     .description("View block metadata information from server")
     .action(async () => {
+        isLoggedInOrExit();
         const { id, published } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
         if (!published) {
             logWarn(
@@ -125,6 +139,7 @@ program
     )
     .option("-s, --silent [silent]", "Suppress prompts")
     .action(async ({ name, category, majorVersion, silent }) => {
+        isLoggedInOrExit();
         if (majorVersion) {
             const recommendMsg =
                 "We recommend tagging your major releases and creating new branches from them for future updates.";
@@ -198,6 +213,7 @@ program
         "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
     )
     .action(({ togglePublic, unminified }) => {
+        isLoggedInOrExit();
         update(togglePublic, unminified).catch(e => logError(e.message));
     });
 
@@ -213,6 +229,7 @@ program
     )
     .option("-s, --silent [silent]", "Suppress confirmation prompts")
     .action(async ({ silent }) => {
+        isLoggedInOrExit();
         const versions = blockDetails();
         const { current, name } = versions;
         if (silent) {
@@ -245,6 +262,7 @@ program
     .option("-n, --note [note]", "Note attached to the release")
     .option("-s, --silent [silent]", "Suppress confirmation prompts")
     .action(async ({ note, silent }: any) => {
+        isLoggedInOrExit();
         const versions = blockDetails();
         const { name } = versions;
         const nonMajorInfoMsg =

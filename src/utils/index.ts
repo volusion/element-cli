@@ -2,8 +2,10 @@ export {
     createBlockSettingsFile,
     readBlockSettingsFile,
     readTokenFile,
+    deleteTokenFile,
     updateBlockSettingsFile,
     writeTokenFile,
+    isLoggedInOrExit,
 } from "./files";
 export { formatName, toPascalCase } from "./formatting";
 export { prepareImage } from "./images";
