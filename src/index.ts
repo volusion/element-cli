@@ -70,7 +70,7 @@ program
 
 program
     .command("logout")
-    .description("Log out the cli")
+    .description("Log out of the cli")
     .action(() => {
         isLoggedInOrExit();
         logout();
