@@ -27,7 +27,7 @@ import {
 } from "./utils";
 
 program
-    .version("3.1.0", "-v, --version")
+    .version("3.1.1", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
