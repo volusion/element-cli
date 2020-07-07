@@ -78,7 +78,7 @@ export const updateBlockSettingsFile = (latestData: UpdateData): void => {
 
 export const isLoggedInOrExit = (): void => {
     if (!existsSync(RC_FILE_PATH)) {
-        logError("You have been logged out. Please run element login");
+        logError("You have been logged out. Please run 'element login'");
         exit(1);
     }
 };
