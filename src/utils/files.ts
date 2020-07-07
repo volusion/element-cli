@@ -68,7 +68,7 @@ const readFile = (path: string): string | undefined => {
 const createDataString = (latestData: UpdateData): string => {
     const currentData = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
     const updatedData = Object.assign({}, currentData, latestData);
-    return JSON.stringify(updatedData);
+    return JSON.stringify(updatedData, null, 2);
 };
 
 export const updateBlockSettingsFile = (latestData: UpdateData): void => {

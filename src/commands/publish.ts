@@ -13,11 +13,13 @@ import {
     BUILT_FILE_PATH,
     USER_DEFINED_BLOCK_CONFIG_FILE,
 } from "../constants";
+import { isVerbose } from "../index";
 import {
     checkErrorCode,
     createBlockRequest,
     createMajorBlockRequest,
     logError,
+    logInfo,
     logSuccess,
     readBlockSettingsFile,
     releaseBlockRequest,
@@ -35,6 +37,8 @@ const publish = async (
     categories?: string[]
 ): Promise<void> => {
     validateFilesExistOrExit();
+
+    await runBuild();
 
     const { displayName, publishedName, id } = validateInputs(
         name,
@@ -57,6 +61,8 @@ const publish = async (
             minifiedCode,
             category
         );
+
+        logResponse(res);
 
         const version = 1;
 
@@ -91,7 +97,7 @@ const newMajorVersion = async (): Promise<void> => {
     const { displayName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
-        await execAsync("npm run build");
+        await runBuild();
 
         const blockData = readFileSync(filePath).toString();
         const minifiedCode = uglify.minify(blockData).code;
@@ -101,19 +107,16 @@ const newMajorVersion = async (): Promise<void> => {
             minifiedCode,
             id
         );
-        const newVersion =
-            res.data.versions.reduce((accMax: any, item: any) => {
-                return item.isMajor && item.isActive
-                    ? Math.max(accMax, item.version)
-                    : accMax;
-            }, 1) || 1;
+        logResponse(res);
+
+        const latestMajorVersion = getLatestMajorVersion(res.data.versions);
 
         updateBlockSettingsFile({
-            activeVersion: newVersion,
+            activeVersion: latestMajorVersion,
         });
 
         logSuccess(`
-            Published ${displayName} v${newVersion} for staging
+            Published ${displayName} v${latestMajorVersion} for staging
             ID ${res.data.id}
         `);
         exit(0);
@@ -130,6 +133,8 @@ const update = async (
 ): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
+
+    await runBuild();
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
@@ -157,6 +162,8 @@ const update = async (
             version
         );
 
+        logResponse(res);
+
         updateBlockSettingsFile({
             activeVersion: version,
             isPublic: publicFlag,
@@ -180,6 +187,8 @@ const release = async (note: string): Promise<void> => {
     validateFilesExistOrExit();
     validateBlockExistOrExit();
 
+    await runBuild();
+
     const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
     );
@@ -189,12 +198,14 @@ const release = async (note: string): Promise<void> => {
     try {
         const res: AxiosResponse = await releaseBlockRequest(id, note, version);
 
+        logResponse(res);
+
         updateBlockSettingsFile({
             activeVersion: version,
         });
 
         logSuccess(`
-            Released ${displayName} v${version} for production
+            Released ${displayName} v${version}
             ID ${res.data.id}
         `);
 
@@ -218,6 +229,8 @@ const rollback = async (): Promise<void> => {
 
     try {
         const res: AxiosResponse = await rollbackBlockRequest(id, version);
+
+        logResponse(res);
 
         logSuccess(`
             Rolled back ${displayName} v${version}
@@ -252,3 +265,33 @@ const blockDetails = (): {
 };
 
 export { publish, update, release, rollback, blockDetails, newMajorVersion };
+
+function getLatestMajorVersion(versions: any[]): number {
+    return (
+        versions.reduce((accMax: any, item: any) => {
+            return item.isMajor ? Math.max(accMax, item.version) : accMax;
+        }, 1) || 1
+    );
+}
+
+async function runBuild(): Promise<void> {
+    if (isVerbose) {
+        logInfo("Running npm build");
+    }
+    try {
+        const { stdout } = await execAsync("npm run build");
+        logInfo(stdout);
+    } catch (error) {
+        logError(`${error.message}
+
+            Error encountered running the build. Please run "npm run build" after addressing the issue.
+        `);
+        process.exit(1);
+    }
+}
+
+function logResponse(res: AxiosResponse<any>): void {
+    if (isVerbose) {
+        logInfo(`Response:\n ${JSON.stringify(res.data, null, 2)}`);
+    }
+}

@@ -27,7 +27,7 @@ import {
 } from "./utils";
 
 program
-    .version("3.1.0", "-v, --version")
+    .version("3.1.1", "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
@@ -98,17 +98,21 @@ program
     .description("View block metadata information from server")
     .action(async () => {
         isLoggedInOrExit();
-        const { id, published } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+        const { activeVersion, id, published } = readBlockSettingsFile(
+            BLOCK_SETTINGS_FILE
+        );
         if (!published) {
             logWarn(
                 "You must first publish your block to view server information."
             );
             process.exit(1);
         }
-        const block = await getBlockRequest(id).catch((err: Error) => {
-            logError(err);
-            process.exit(1);
-        });
+        const block = await getBlockRequest(id, activeVersion).catch(
+            (err: Error) => {
+                logError(err);
+                process.exit(1);
+            }
+        );
         logInfo("Block metadata:");
         logInfo(JSON.stringify(block.data.metadata, null, 2));
     });
