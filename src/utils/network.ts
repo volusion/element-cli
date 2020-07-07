@@ -124,8 +124,15 @@ export const createBlockId = (): AxiosPromise =>
         })
     );
 
-export const getBlockRequest = (id: string): AxiosPromise =>
-    axios(requestOptions("GET", `${config.blockRegistry.host}/blocks/${id}`));
+export const getBlockRequest = (id: string, version?: number): AxiosPromise =>
+    axios(
+        requestOptions(
+            "GET",
+            `${config.blockRegistry.host}/blocks/${id}${
+                version ? "?version=" + version : ""
+            }`
+        )
+    );
 
 export const createBlockRequest = (
     defaultConfig: { [key: string]: any },
