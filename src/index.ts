@@ -15,7 +15,7 @@ import {
     rollback,
     update,
 } from "./commands/publish";
-import { BLOCK_SETTINGS_FILE } from "./constants";
+import { BLOCK_SETTINGS_FILE, ELEMENT_VERSION } from "./constants";
 import {
     getBlockRequest,
     getCategoryNames,
@@ -27,7 +27,7 @@ import {
 } from "./utils";
 
 program
-    .version("3.1.1", "-v, --version")
+    .version(ELEMENT_VERSION, "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .description("Command line interface for the Volusion Element ecosystem");
