@@ -15,7 +15,7 @@ import {
     rollback,
     update,
 } from "./commands/publish";
-import { BLOCK_SETTINGS_FILE } from "./constants";
+import { BLOCK_SETTINGS_FILE, ELEMENT_VERSION } from "./constants";
 import {
     getBlockRequest,
     getCategoryNames,
@@ -27,13 +27,16 @@ import {
 } from "./utils";
 
 program
-    .version("3.1.1", "-v, --version")
+    .version(ELEMENT_VERSION, "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
+    .option("-S, --skip-build", "Skip build")
     .description("Command line interface for the Volusion Element ecosystem");
 
 export const isVerbose =
     process.argv.includes("-V") || process.argv.includes("--verbose");
+export const skipBuild =
+    process.argv.includes("-S") || process.argv.includes("--skip-build");
 
 program
     .command("login")
@@ -302,7 +305,9 @@ program.on("command:*", () => {
 
 if (
     process.env.NODE_ENV !== "test" &&
-    (process.argv.length <= 2 || (isVerbose && process.argv.length === 3))
+    (process.argv.length <= 2 ||
+        (isVerbose && process.argv.length === 3) ||
+        (skipBuild && process.argv.length === 3))
 ) {
     program.outputHelp();
 } else {

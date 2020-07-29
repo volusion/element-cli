@@ -13,7 +13,7 @@ import {
     BUILT_FILE_PATH,
     USER_DEFINED_BLOCK_CONFIG_FILE,
 } from "../constants";
-import { isVerbose } from "../index";
+import { isVerbose, skipBuild } from "../index";
 import {
     checkErrorCode,
     createBlockRequest,
@@ -275,6 +275,10 @@ function getLatestMajorVersion(versions: any[]): number {
 }
 
 async function runBuild(): Promise<void> {
+    if (skipBuild) {
+        logInfo("Skipping npm build");
+        return;
+    }
     if (isVerbose) {
         logInfo("Running npm build");
     }

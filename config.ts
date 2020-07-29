@@ -1,5 +1,8 @@
+import { ELEMENT_VERSION } from "./src/constants";
+
 interface Config {
     blockRegistry: { host: string };
+    userAgent: string;
 }
 
 interface AuthConfig {
@@ -31,6 +34,8 @@ const config: Config = {
             process.env.ELEMENT_BLOCK_REGISTRY_URI ||
             "https://btr.v2-prod.volusion.com",
     },
+    userAgent:
+        process.env.ELEMENT_USER_AGENT || `element-cli/${ELEMENT_VERSION};`,
 };
 
 const authInformation: AuthConfig & AuthConstants = Object.assign(

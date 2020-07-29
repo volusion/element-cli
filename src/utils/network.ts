@@ -33,6 +33,7 @@ const requestOptions = (
         Authorization: string;
         "Content-Type": string;
         "Element-Cli-Version": string;
+        "User-Agent": string;
     };
     method: HTTPVerbs;
     url: string;
@@ -46,6 +47,7 @@ const requestOptions = (
             Authorization: `Bearer ${getAppToken()}`,
             "Content-Type": "application/json",
             "Element-Cli-Version": packageFile.version,
+            "User-Agent": config.userAgent,
         },
         method,
         url,
@@ -230,7 +232,7 @@ export const rollbackBlockRequest = (
 export const getCategoryNames = async (): Promise<string[] | undefined> => {
     try {
         const url = `${config.blockRegistry.host}/categories`;
-        return await axios(requestOptions("GET", url)).then(
+        return axios(requestOptions("GET", url)).then(
             (categories: AxiosResponse) =>
                 categories.data.map(
                     (category: { id: string; name: string }) => category.name
@@ -264,5 +266,10 @@ export const loginRequest = (
         );
     }
 
-    return axios({ data, method: "POST", url: config.loginUrl });
+    return axios({
+        data,
+        headers: { "User-Agent": config.userAgent },
+        method: "POST",
+        url: config.loginUrl,
+    });
 };
