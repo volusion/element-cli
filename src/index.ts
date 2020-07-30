@@ -26,17 +26,17 @@ import {
     readBlockSettingsFile,
 } from "./utils";
 
+export const isVerbose =
+    process.argv.includes("-V") || process.argv.includes("--verbose");
+export const skipBuild =
+    process.argv.includes("-S") || process.argv.includes("--skip-build");
+
 program
     .version(ELEMENT_VERSION, "-v, --version")
     .usage(`[options] command`)
     .option("-V, --verbose", "Display verbose output")
     .option("-S, --skip-build", "Skip build")
     .description("Command line interface for the Volusion Element ecosystem");
-
-export const isVerbose =
-    process.argv.includes("-V") || process.argv.includes("--verbose");
-export const skipBuild =
-    process.argv.includes("-S") || process.argv.includes("--skip-build");
 
 program
     .command("login")
@@ -96,6 +96,7 @@ program
         const categories = await getCategoryNames();
         logInfo((categories || []).join("\n"));
     });
+
 program
     .command("info")
     .description("View block metadata information from server")
@@ -108,12 +109,12 @@ program
             logWarn(
                 "You must first publish your block to view server information."
             );
-            process.exit(1);
+            exit(1);
         }
         const block = await getBlockRequest(id, activeVersion).catch(
             (err: Error) => {
                 logError(err);
-                process.exit(1);
+                exit(1);
             }
         );
         logInfo("Block metadata:");

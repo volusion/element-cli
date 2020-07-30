@@ -23,8 +23,8 @@ export {
 } from "./network";
 export {
     validateInputs,
-    validateBlockExistOrExit,
-    validateFilesExistOrExit,
+    validateBlockPublished,
+    validateBlockDirectory,
 } from "./validation";
 
 export { cloneRepo } from "./git";

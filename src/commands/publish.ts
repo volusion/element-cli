@@ -26,8 +26,8 @@ import {
     rollbackBlockRequest,
     updateBlockRequest,
     updateBlockSettingsFile,
-    validateBlockExistOrExit,
-    validateFilesExistOrExit,
+    validateBlockDirectory,
+    validateBlockPublished,
     validateInputs,
 } from "../utils";
 
@@ -36,8 +36,7 @@ const publish = async (
     category: string,
     categories?: string[]
 ): Promise<void> => {
-    validateFilesExistOrExit();
-
+    validateBlockDirectory();
     await runBuild();
 
     const { displayName, publishedName, id } = validateInputs(
@@ -89,16 +88,15 @@ const publish = async (
 };
 
 const newMajorVersion = async (): Promise<void> => {
-    validateFilesExistOrExit();
-    validateBlockExistOrExit();
+    validateBlockDirectory();
+    validateBlockPublished();
+    await runBuild();
 
     const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const { displayName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     try {
-        await runBuild();
-
         const blockData = readFileSync(filePath).toString();
         const minifiedCode = uglify.minify(blockData).code;
 
@@ -131,9 +129,8 @@ const update = async (
     togglePublic: boolean,
     unminified: boolean
 ): Promise<void> => {
-    validateFilesExistOrExit();
-    validateBlockExistOrExit();
-
+    validateBlockDirectory();
+    validateBlockPublished();
     await runBuild();
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
@@ -184,10 +181,8 @@ const update = async (
 };
 
 const release = async (note: string): Promise<void> => {
-    validateFilesExistOrExit();
-    validateBlockExistOrExit();
-
-    await runBuild();
+    validateBlockDirectory();
+    validateBlockPublished();
 
     const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
@@ -218,8 +213,8 @@ const release = async (note: string): Promise<void> => {
 };
 
 const rollback = async (): Promise<void> => {
-    validateFilesExistOrExit();
-    validateBlockExistOrExit();
+    validateBlockDirectory();
+    validateBlockPublished();
 
     const { activeVersion, displayName, id } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE
@@ -249,8 +244,8 @@ const blockDetails = (): {
     current: number;
     name: string;
 } => {
-    validateFilesExistOrExit();
-    validateBlockExistOrExit();
+    validateBlockDirectory();
+    validateBlockPublished();
 
     const { activeVersion, displayName } = readBlockSettingsFile(
         BLOCK_SETTINGS_FILE

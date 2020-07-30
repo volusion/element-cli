@@ -1,11 +1,7 @@
 import { existsSync } from "fs";
 import { exit } from "process";
 
-import {
-    BLOCK_SETTINGS_FILE,
-    BUILT_FILE_PATH,
-    RC_FILE_PATH,
-} from "../constants";
+import { BLOCK_SETTINGS_FILE } from "../constants";
 import { formatName, logError, readBlockSettingsFile } from "./index";
 
 const isCategoryValid = (category: string, categories: string[]): boolean => {
@@ -47,38 +43,20 @@ export const validateInputs = (
     return { displayName, publishedName, id };
 };
 
-export const validateBlockExistOrExit = (): void => {
+export const validateBlockPublished = (): void => {
     const fileContents = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    if (!fileContents.id) {
+    if (!fileContents.published) {
         logError("Please ensure you have published the block first.");
         exit(1);
     }
 };
 
-export const validateFilesExistOrExit = (): void => {
-    const pathsAndMessages = [
-        {
-            message:
-                "Please log in before proceeding. Use the `login` command.",
-            path: RC_FILE_PATH,
-        },
-        {
-            message:
-                "This does not seem to be a block directory. Please double-check where you think you are.",
-            path: BLOCK_SETTINGS_FILE,
-        },
-        {
-            message:
-                "A built file is not present. Please ensure you have built your block with `npm run build`.",
-            path: BUILT_FILE_PATH,
-        },
-    ];
-
-    pathsAndMessages.forEach(({ path, message }) => {
-        if (!existsSync(path)) {
-            logError(message);
-            exit(1);
-        }
-    });
+export const validateBlockDirectory = (): void => {
+    if (!existsSync(BLOCK_SETTINGS_FILE)) {
+        logError(
+            "This does not seem to be a block directory. Please double-check where you think you are."
+        );
+        process.exit(1);
+    }
 };
