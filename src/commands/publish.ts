@@ -128,7 +128,7 @@ const newMajorVersion = async (): Promise<void> => {
 const update = async (
     togglePublic: boolean,
     unminified: boolean,
-    updatedCategory: string
+    updatedCategory: string | undefined
 ): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
@@ -159,13 +159,14 @@ const update = async (
             id,
             publicFlag,
             version,
-            updatedCategory ?? currentCategory
+            updatedCategory || currentCategory
         );
 
         logResponse(res);
 
         updateBlockSettingsFile({
             activeVersion: version,
+            category: res.data.category,
             isPublic: publicFlag,
             published: true,
         });
