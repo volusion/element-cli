@@ -28,6 +28,7 @@ import {
     updateBlockSettingsFile,
     validateBlockDirectory,
     validateBlockPublished,
+    validateCategory,
     validateInputs,
 } from "../utils";
 
@@ -39,7 +40,7 @@ const publish = async (
     validateBlockDirectory();
     await runBuild();
 
-    const { displayName, publishedName, id } = validateInputs(
+    const { displayName, publishedName, id } = await validateInputs(
         name,
         category,
         categories
@@ -150,6 +151,10 @@ const update = async (
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
     const version = activeVersion || 1;
+
+    if (updatedCategory && updatedCategory !== currentCategory) {
+        await validateCategory(updatedCategory);
+    }
 
     try {
         const res: AxiosResponse = await updateBlockRequest(
