@@ -66,9 +66,9 @@ const buildRequestConfig = ({
     defaultConfig,
     note = "",
 }: {
-    id?: string;
-    category?: string | undefined;
+    category?: string;
     fileData: string;
+    id?: string;
     isPublic?: boolean;
     method: string;
     names: {
