@@ -220,9 +220,15 @@ program
         "-u, --unminified [unminified]",
         "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
     )
-    .action(({ togglePublic, unminified }) => {
+    .option(
+        "-c, --category [category]",
+        "The Category name that best fits this block"
+    )
+    .action(({ togglePublic, unminified, category }) => {
         isLoggedInOrExit();
-        update(togglePublic, unminified).catch(e => logError(e.message));
+        update(togglePublic, unminified, category).catch(e =>
+            logError(e.message)
+        );
     });
 
 program

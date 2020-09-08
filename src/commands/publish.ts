@@ -127,7 +127,8 @@ const newMajorVersion = async (): Promise<void> => {
 
 const update = async (
     togglePublic: boolean,
-    unminified: boolean
+    unminified: boolean,
+    updatedCategory: string
 ): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
@@ -140,6 +141,7 @@ const update = async (
     const code = unminified ? blockData : uglify.minify(blockData).code;
     const {
         activeVersion,
+        category: currentCategory,
         displayName,
         id,
         isPublic,
@@ -156,7 +158,8 @@ const update = async (
             code,
             id,
             publicFlag,
-            version
+            version,
+            updatedCategory ?? currentCategory
         );
 
         logResponse(res);

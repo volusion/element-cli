@@ -169,10 +169,12 @@ export const updateBlockRequest = (
     fileData: string,
     id: string,
     isPublic: boolean,
-    version: number
+    version: number,
+    category: string
 ): AxiosPromise =>
     axios(
         buildRequestConfig({
+            category,
             defaultConfig,
             fileData,
             isPublic,
