@@ -210,7 +210,9 @@ program
                         outside of your organization.
                     [-u, --unminified]
                         Optionally, do not minify the bundle sent to the server.
-                        Useful for debugging.`
+                        Useful for debugging.
+                    [-c, --category CATEGORY]
+                        Optionally change the block's category.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
