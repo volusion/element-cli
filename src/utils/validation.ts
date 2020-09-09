@@ -5,8 +5,11 @@ import { BLOCK_SETTINGS_FILE } from "../constants";
 import { formatName, logError, readBlockSettingsFile } from "./index";
 import { getCategoryNames } from "./network";
 
-const isCategoryValid = (category: string, categories: string[]): boolean => {
-    return categories
+const isCategoryValid = (
+    category: string,
+    validCategories: string[]
+): boolean => {
+    return validCategories
         .map(cat => cat.toLowerCase())
         .includes(category.toLowerCase());
 };
@@ -15,13 +18,13 @@ export const validateCategory = async (
     category: string,
     categories: string[] = []
 ): Promise<void> => {
-    const categoryNames =
+    const validCategoryNames =
         categories.length > 0 ? categories : await getCategoryNames();
 
-    if (!isCategoryValid(category, categoryNames || [])) {
+    if (!isCategoryValid(category, validCategoryNames || [])) {
         logError(
             `${category} is not a valid category name. Please enter a valid category name:\n\t- ${(
-                categoryNames || []
+                validCategoryNames || []
             ).join("\n\t- ")}`
         );
         exit(1);
