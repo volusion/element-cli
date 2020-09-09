@@ -25,6 +25,7 @@ export {
     validateInputs,
     validateBlockPublished,
     validateBlockDirectory,
+    validateCategory,
 } from "./validation";
 
 export { cloneRepo } from "./git";

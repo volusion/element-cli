@@ -210,7 +210,9 @@ program
                         outside of your organization.
                     [-u, --unminified]
                         Optionally, do not minify the bundle sent to the server.
-                        Useful for debugging.`
+                        Useful for debugging.
+                    [-c, --category CATEGORY]
+                        Optionally change the block's category.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
@@ -220,9 +222,15 @@ program
         "-u, --unminified [unminified]",
         "Optional flag to disable bundle minify. By default, bundles are minified. Useful for debugging problems"
     )
-    .action(({ togglePublic, unminified }) => {
+    .option(
+        "-c, --category [category]",
+        "The Category name that best fits this block"
+    )
+    .action(({ togglePublic, unminified, category }) => {
         isLoggedInOrExit();
-        update(togglePublic, unminified).catch(e => logError(e.message));
+        update(togglePublic, unminified, category).catch(e =>
+            logError(e.message)
+        );
     });
 
 program

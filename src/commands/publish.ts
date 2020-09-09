@@ -28,6 +28,7 @@ import {
     updateBlockSettingsFile,
     validateBlockDirectory,
     validateBlockPublished,
+    validateCategory,
     validateInputs,
 } from "../utils";
 
@@ -39,7 +40,7 @@ const publish = async (
     validateBlockDirectory();
     await runBuild();
 
-    const { displayName, publishedName, id } = validateInputs(
+    const { displayName, publishedName, id } = await validateInputs(
         name,
         category,
         categories
@@ -127,7 +128,8 @@ const newMajorVersion = async (): Promise<void> => {
 
 const update = async (
     togglePublic: boolean,
-    unminified: boolean
+    unminified: boolean,
+    updatedCategory: string | undefined
 ): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
@@ -140,6 +142,7 @@ const update = async (
     const code = unminified ? blockData : uglify.minify(blockData).code;
     const {
         activeVersion,
+        category: currentCategory,
         displayName,
         id,
         isPublic,
@@ -149,6 +152,10 @@ const update = async (
     const publicFlag = togglePublic ? !isPublic : isPublic;
     const version = activeVersion || 1;
 
+    if (updatedCategory && updatedCategory !== currentCategory) {
+        await validateCategory(updatedCategory);
+    }
+
     try {
         const res: AxiosResponse = await updateBlockRequest(
             defaultConfig,
@@ -156,13 +163,15 @@ const update = async (
             code,
             id,
             publicFlag,
-            version
+            version,
+            updatedCategory || currentCategory
         );
 
         logResponse(res);
 
         updateBlockSettingsFile({
             activeVersion: version,
+            category: res.data.category,
             isPublic: publicFlag,
             published: true,
         });

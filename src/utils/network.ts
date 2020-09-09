@@ -66,9 +66,9 @@ const buildRequestConfig = ({
     defaultConfig,
     note = "",
 }: {
-    id?: string;
     category?: string;
     fileData: string;
+    id?: string;
     isPublic?: boolean;
     method: string;
     names: {
@@ -169,10 +169,12 @@ export const updateBlockRequest = (
     fileData: string,
     id: string,
     isPublic: boolean,
-    version: number
+    version: number,
+    category: string | undefined
 ): AxiosPromise =>
     axios(
         buildRequestConfig({
+            category,
             defaultConfig,
             fileData,
             isPublic,
