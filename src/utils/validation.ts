@@ -8,24 +8,26 @@ import { getCategoryNames } from "./network";
 const isCategoryValid = (
     category: string,
     validCategories: string[]
-): boolean => {
-    return validCategories
-        .map(cat => cat.toLowerCase())
-        .includes(category.toLowerCase());
-};
+): boolean => validCategories.includes(category);
 
 export const validateCategory = async (
     category: string,
     categories: string[] = []
 ): Promise<void> => {
-    const validCategoryNames =
-        categories.length > 0 ? categories : await getCategoryNames();
+    const categoryNames =
+        categories.length > 0
+            ? categories
+            : await getCategoryNames().catch((err: Error) => {
+                  logError(
+                      `Unexpected error retrieving categories: ${err.message}`
+                  );
+                  exit(1);
+              });
 
-    if (!isCategoryValid(category, validCategoryNames || [])) {
+    if (!isCategoryValid(category, categoryNames || [])) {
+        const validCategoryDisplayList = (categoryNames || []).join("\n\t- ");
         logError(
-            `${category} is not a valid category name. Please enter a valid category name:\n\t- ${(
-                validCategoryNames || []
-            ).join("\n\t- ")}`
+            `\n"${category}" is not a valid category name.\nPlease use a valid category name:\n\t- ${validCategoryDisplayList}`
         );
         exit(1);
     }
