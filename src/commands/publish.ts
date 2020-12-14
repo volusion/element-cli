@@ -32,19 +32,31 @@ import {
     validateInputs,
 } from "../utils";
 
-const publish = async (
-    name: string | null,
-    category: string,
-    categories?: string[]
-): Promise<void> => {
+const publish = async ({
+    name,
+    category,
+    categories,
+    integrationName: integrationName,
+}: {
+    name: string | null;
+    category: string;
+    categories?: string[];
+    integrationName?: string;
+}): Promise<void> => {
     validateBlockDirectory();
     await runBuild();
 
-    const { displayName, publishedName, id } = await validateInputs(
-        name,
+    const {
+        displayName,
+        publishedName,
+        id,
+        integrationId,
+    } = await validateInputs({
+        categories,
         category,
-        categories
-    );
+        integrationName,
+        name,
+    });
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);

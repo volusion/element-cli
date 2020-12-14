@@ -129,6 +129,7 @@ program
                     [-c, --category CATEGORY]
                     [-m, --major-version]
                     [-s, --silent] An optional flag to suppress prompts
+                    [-i, --integration]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
@@ -146,7 +147,11 @@ program
         "Publish a new major version of this block"
     )
     .option("-s, --silent [silent]", "Suppress prompts")
-    .action(async ({ name, category, majorVersion, silent }) => {
+    .option(
+        "-i, --integration [integration]",
+        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'."
+    )
+    .action(async ({ name, category, majorVersion, silent, integration }) => {
         isLoggedInOrExit();
         if (majorVersion) {
             const recommendMsg =
@@ -180,7 +185,12 @@ program
                 exit(1);
             }
             if (category) {
-                publish(name, category, categories);
+                publish({
+                    name,
+                    category,
+                    categories,
+                    integrationName: integration,
+                });
             } else {
                 inquirer
                     .prompt({
@@ -192,9 +202,11 @@ program
                     })
                     .then((val: any) => {
                         const { categoryFromList } = val;
-                        publish(name, categoryFromList).catch((e) =>
-                            logError(e.message)
-                        );
+                        publish({
+                            name,
+                            category: categoryFromList,
+                            integrationName: integration,
+                        }).catch((e) => logError(e.message));
                     });
             }
         }

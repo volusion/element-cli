@@ -5,6 +5,19 @@ import { BLOCK_SETTINGS_FILE } from "../constants";
 import { formatName, logError, readBlockSettingsFile } from "./index";
 import { getCategoryNames } from "./network";
 
+const INTEGRATIONS: Record<string, { id: number } | undefined> = {
+    volt: {
+        id: 1,
+    },
+    // tslint:disable-next-line: object-literal-sort-keys
+    standard: {
+        id: 2,
+    },
+    v1: {
+        id: 3,
+    },
+};
+
 const isCategoryValid = (
     category: string,
     validCategories: string[]
@@ -33,11 +46,22 @@ export const validateCategory = async (
     }
 };
 
-export const validateInputs = async (
-    name: string | null,
-    category: string,
-    categories?: string[]
-): Promise<{ displayName: string; publishedName: string; id: string }> => {
+export const validateInputs = async ({
+    name,
+    category,
+    categories,
+    integrationName,
+}: {
+    name: string | null;
+    category: string;
+    categories?: string[];
+    integrationName?: string;
+}): Promise<{
+    displayName: string;
+    publishedName: string;
+    id: string;
+    integrationId: number;
+}> => {
     // Commander sends `name` as a function if user does not
     // provide the name
     if (typeof name === "function") {
@@ -49,6 +73,12 @@ export const validateInputs = async (
         exit(1);
     }
 
+    const integration = INTEGRATIONS[integrationName || "volt"];
+    if (!integration) {
+        logError("Supported integrations are 'volt', 'standard', and 'v1.");
+        exit(1);
+    }
+
     await validateCategory(category, categories);
 
     const nameFromDotFile = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
@@ -56,7 +86,7 @@ export const validateInputs = async (
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    return { displayName, publishedName, id };
+    return { displayName, publishedName, id, integrationId: integration.id };
 };
 
 export const validateBlockPublished = (): void => {
