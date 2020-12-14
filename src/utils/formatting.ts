@@ -21,4 +21,4 @@ export const toPascalCase = (input: string): string =>
                 `${letterAfterSpace.toUpperCase()}${restOfWord.toLowerCase()}`
         )
         .replace(new RegExp(/\s/, "g"), "")
-        .replace(new RegExp(/\w/), s => s.toUpperCase());
+        .replace(new RegExp(/\w/), (s) => s.toUpperCase());

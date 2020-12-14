@@ -14,7 +14,7 @@ export const login = (username: string, password: string): Promise<void> => {
             logInfo(`Logged in as ${username}.`);
             exit(0);
         })
-        .catch(err => {
+        .catch((err) => {
             logError(`Problem with the login process: ${err.message}`);
             exit(1);
         });
