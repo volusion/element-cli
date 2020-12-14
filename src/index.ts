@@ -82,7 +82,7 @@ program
 program
     .command("new <name>")
     .description(`Create the block boilerplate`)
-    .action(name => {
+    .action((name) => {
         isLoggedInOrExit();
 
         cloneBoilerplate(name);
@@ -164,7 +164,7 @@ program
                 })
                 .then((confirmation: any) => {
                     if (confirmation.majorConfirmation) {
-                        newMajorVersion().catch(e => logError(e.message));
+                        newMajorVersion().catch((e) => logError(e.message));
                     } else {
                         exit(0);
                     }
@@ -192,7 +192,7 @@ program
                     })
                     .then((val: any) => {
                         const { categoryFromList } = val;
-                        publish(name, categoryFromList).catch(e =>
+                        publish(name, categoryFromList).catch((e) =>
                             logError(e.message)
                         );
                     });
@@ -228,7 +228,7 @@ program
     )
     .action(({ togglePublic, unminified, category }) => {
         isLoggedInOrExit();
-        update(togglePublic, unminified, category).catch(e =>
+        update(togglePublic, unminified, category).catch((e) =>
             logError(e.message)
         );
     });
