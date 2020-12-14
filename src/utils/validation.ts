@@ -60,7 +60,7 @@ export const validateInputs = async ({
     displayName: string;
     publishedName: string;
     id: string;
-    integrationId: number;
+    integrationId?: number;
 }> => {
     // Commander sends `name` as a function if user does not
     // provide the name
@@ -73,8 +73,8 @@ export const validateInputs = async ({
         exit(1);
     }
 
-    const integration = INTEGRATIONS[integrationName || "volt"];
-    if (!integration) {
+    const integration = INTEGRATIONS[integrationName!];
+    if (integrationName && !integration) {
         logError("Supported integrations are 'volt', 'standard', and 'v1.");
         exit(1);
     }
@@ -86,7 +86,7 @@ export const validateInputs = async ({
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    return { displayName, publishedName, id, integrationId: integration.id };
+    return { displayName, publishedName, id, integrationId: integration?.id };
 };
 
 export const validateBlockPublished = (): void => {

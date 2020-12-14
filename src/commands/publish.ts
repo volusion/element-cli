@@ -63,16 +63,17 @@ const publish = async ({
     const minifiedCode = uglify.minify(blockData).code;
 
     try {
-        const res: AxiosResponse = await createBlockRequest(
+        const res: AxiosResponse = await createBlockRequest({
+            category,
             defaultConfig,
+            fileData: minifiedCode,
             id,
-            {
+            integrationId,
+            names: {
                 displayName,
                 publishedName,
             },
-            minifiedCode,
-            category
-        );
+        });
 
         logResponse(res);
 
@@ -83,6 +84,7 @@ const publish = async ({
             category,
             displayName,
             id: res.data.id,
+            integrationId: res.data.integrationId,
             isPublic: false,
             published: true,
         });
