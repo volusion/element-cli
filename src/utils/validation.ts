@@ -73,11 +73,7 @@ export const validateInputs = async ({
         exit(1);
     }
 
-    const integration = INTEGRATIONS[integrationName!];
-    if (integrationName && !integration) {
-        logError("Supported integrations are 'volt', 'standard', and 'v1.");
-        exit(1);
-    }
+    const integrationId = validateIntegration(integrationName);
 
     await validateCategory(category, categories);
 
@@ -86,7 +82,7 @@ export const validateInputs = async ({
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    return { displayName, publishedName, id, integrationId: integration?.id };
+    return { displayName, publishedName, id, integrationId };
 };
 
 export const validateBlockPublished = (): void => {
@@ -105,4 +101,19 @@ export const validateBlockDirectory = (): void => {
         );
         process.exit(1);
     }
+};
+
+export const validateIntegration = (
+    integrationName: string | undefined
+): number | undefined => {
+    if (!integrationName) {
+        return undefined;
+    }
+
+    const integration = INTEGRATIONS[integrationName!];
+    if (!integration) {
+        logError("Supported integrations are 'volt', 'standard', and 'v1'.");
+        exit(1);
+    }
+    return integration.id;
 };

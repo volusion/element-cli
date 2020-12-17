@@ -149,7 +149,7 @@ program
     .option("-s, --silent [silent]", "Suppress prompts")
     .option(
         "-i, --integration [integration]",
-        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'."
+        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'. Defaults to 'standard'."
     )
     .action(async ({ name, category, majorVersion, silent, integration }) => {
         isLoggedInOrExit();
@@ -224,7 +224,9 @@ program
                         Optionally, do not minify the bundle sent to the server.
                         Useful for debugging.
                     [-c, --category CATEGORY]
-                        Optionally change the block's category.`
+                        Optionally change the block's category.
+                    [-i, --integration]
+                        Optionally change the block's integration.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
@@ -238,11 +240,18 @@ program
         "-c, --category [category]",
         "The Category name that best fits this block"
     )
-    .action(({ togglePublic, unminified, category }) => {
+    .option(
+        "-i, --integration [integration]",
+        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'."
+    )
+    .action(({ togglePublic, unminified, category, integration }) => {
         isLoggedInOrExit();
-        update(togglePublic, unminified, category).catch((e) =>
-            logError(e.message)
-        );
+        update({
+            togglePublic,
+            unminified,
+            updatedCategory: category,
+            updatedIntegration: integration,
+        }).catch((e) => logError(e.message));
     });
 
 program

@@ -31,6 +31,7 @@ import {
     validateCategory,
     validateInputs,
 } from "../utils";
+import { validateIntegration } from "../utils/validation";
 
 const publish = async ({
     name,
@@ -140,11 +141,17 @@ const newMajorVersion = async (): Promise<void> => {
     }
 };
 
-const update = async (
-    togglePublic: boolean,
-    unminified: boolean,
-    updatedCategory: string | undefined
-): Promise<void> => {
+const update = async ({
+    togglePublic,
+    unminified,
+    updatedCategory,
+    updatedIntegration,
+}: {
+    togglePublic: boolean;
+    unminified: boolean;
+    updatedCategory: string | undefined;
+    updatedIntegration: string | undefined;
+}): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
     await runBuild();
@@ -157,6 +164,7 @@ const update = async (
     const {
         activeVersion,
         category: currentCategory,
+
         displayName,
         id,
         isPublic,
@@ -170,22 +178,26 @@ const update = async (
         await validateCategory(updatedCategory);
     }
 
+    const integrationId = validateIntegration(updatedIntegration);
+
     try {
-        const res: AxiosResponse = await updateBlockRequest(
+        const res: AxiosResponse = await updateBlockRequest({
             defaultConfig,
-            { displayName, publishedName },
-            code,
+            names: { displayName, publishedName },
+            fileData: code,
             id,
-            publicFlag,
+            isPublic: publicFlag,
             version,
-            updatedCategory || currentCategory
-        );
+            category: updatedCategory || currentCategory,
+            integrationId,
+        });
 
         logResponse(res);
 
         updateBlockSettingsFile({
             activeVersion: version,
             category: res.data.category,
+            integrationId: res.data.integrationId,
             isPublic: publicFlag,
             published: true,
         });
