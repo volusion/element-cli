@@ -127,9 +127,9 @@ program
         `Publish a block to the Block Theme Registry
                     [-n, --name NAME]
                     [-c, --category CATEGORY]
+                    [-i, --integration]
                     [-m, --major-version]
                     [-s, --silent] An optional flag to suppress prompts
-                    [-i, --integration]
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
@@ -143,14 +143,14 @@ program
         "The Category name that best fits this block"
     )
     .option(
+        "-i, --integration [integration]",
+        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'. Defaults to 'standard'."
+    )
+    .option(
         "-m, --major-version [majorVersion]",
         "Publish a new major version of this block"
     )
     .option("-s, --silent [silent]", "Suppress prompts")
-    .option(
-        "-i, --integration [integration]",
-        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'. Defaults to 'standard'."
-    )
     .action(async ({ name, category, majorVersion, silent, integration }) => {
         isLoggedInOrExit();
         if (majorVersion) {
