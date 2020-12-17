@@ -155,7 +155,7 @@ export const createBlockRequest = ({
     };
     fileData: string;
     category: string;
-    integrationId?: number;
+    integrationId: number | undefined;
 }): AxiosPromise =>
     axios(
         buildRequestConfig({

@@ -55,12 +55,12 @@ export const validateInputs = async ({
     name: string | null;
     category: string;
     categories?: string[];
-    integrationName?: string;
+    integrationName: string | undefined;
 }): Promise<{
     displayName: string;
     publishedName: string;
     id: string;
-    integrationId?: number;
+    integrationId: number | undefined;
 }> => {
     // Commander sends `name` as a function if user does not
     // provide the name
