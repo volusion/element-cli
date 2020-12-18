@@ -20,13 +20,9 @@
             "check-format",
             "allow-leading-underscore"
         ],
-        "interface-name": [
-            true,
-            "never-prefix"
-        ],
+        "interface-name": [true, "never-prefix"],
         "typedef": [
             true,
-            "arrow-call-signature",
             "call-signature",
             "parameter",
             "member-variable-declaration"

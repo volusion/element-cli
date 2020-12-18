@@ -18,7 +18,7 @@ const BOILERPLATE_LOCATION =
     "https://github.com/volusion/element-BlockStarter.git";
 
 const removeStarterExtras = (toRemove: string[]): void => {
-    toRemove.forEach(name => {
+    toRemove.forEach((name) => {
         try {
             rimraf.sync(name);
         } catch (error) {

@@ -131,9 +131,7 @@ export const getBlockRequest = (id: string, version?: number): AxiosPromise => {
     return axios(
         requestOptions(
             "GET",
-            `${
-                config.blockRegistry.host
-            }/blocks/${id}${optionalVersionQueryString}`
+            `${config.blockRegistry.host}/blocks/${id}${optionalVersionQueryString}`
         )
     );
 };
@@ -234,11 +232,12 @@ export const rollbackBlockRequest = (
 export const getCategoryNames = async (): Promise<string[] | undefined> => {
     try {
         const url = `${config.blockRegistry.host}/categories`;
-        return axios(requestOptions("GET", url)).then(
-            (categories: AxiosResponse) =>
-                categories.data.map(
-                    (category: { id: string; name: string }) => category.name
-                )
+        return axios(
+            requestOptions("GET", url)
+        ).then((categories: AxiosResponse) =>
+            categories.data.map(
+                (category: { id: string; name: string }) => category.name
+            )
         );
     } catch (err) {
         logError(`Trouble reaching the categories service: ${err.message}`);
