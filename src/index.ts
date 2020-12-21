@@ -15,7 +15,11 @@ import {
     rollback,
     update,
 } from "./commands/publish";
-import { BLOCK_SETTINGS_FILE, ELEMENT_VERSION } from "./constants";
+import {
+    BLOCK_SETTINGS_FILE,
+    ELEMENT_VERSION,
+    INTEGRATIONS,
+} from "./constants";
 import {
     getBlockRequest,
     getCategoryNames,
@@ -144,7 +148,11 @@ program
     )
     .option(
         "-i, --integration [integration]",
-        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'. Defaults to 'standard'."
+        `The integration this block is built for. Options are: ${Object.keys(
+            INTEGRATIONS
+        )
+            .map((x) => `"${x}"`)
+            .join(", ")}. Defaults to 'standard'.`
     )
     .option(
         "-m, --major-version [majorVersion]",
@@ -242,7 +250,11 @@ program
     )
     .option(
         "-i, --integration [integration]",
-        "The integration this block is built for. Options are 'volt', 'standard', and 'v1'."
+        `The integration this block is built for. Options are: ${Object.keys(
+            INTEGRATIONS
+        )
+            .map((x) => `"${x}"`)
+            .join(", ")}.`
     )
     .action(({ togglePublic, unminified, category, integration }) => {
         isLoggedInOrExit();
