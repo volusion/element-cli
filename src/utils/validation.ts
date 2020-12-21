@@ -1,22 +1,9 @@
 import { existsSync } from "fs";
 import { exit } from "process";
 
-import { BLOCK_SETTINGS_FILE } from "../constants";
+import { BLOCK_SETTINGS_FILE, INTEGRATIONS } from "../constants";
 import { formatName, logError, readBlockSettingsFile } from "./index";
 import { getCategoryNames } from "./network";
-
-const INTEGRATIONS: Record<string, { id: number } | undefined> = {
-    volt: {
-        id: 1,
-    },
-    // tslint:disable-next-line: object-literal-sort-keys
-    standard: {
-        id: 2,
-    },
-    v1: {
-        id: 3,
-    },
-};
 
 const isCategoryValid = (
     category: string,
@@ -73,7 +60,7 @@ export const validateInputs = async ({
         exit(1);
     }
 
-    const integrationId = validateIntegration(integrationName);
+    const integrationId = integrationIdFromName(integrationName);
 
     await validateCategory(category, categories);
 
@@ -103,16 +90,22 @@ export const validateBlockDirectory = (): void => {
     }
 };
 
-export const validateIntegration = (
+export const integrationIdFromName = (
     integrationName: string | undefined
 ): number | undefined => {
     if (!integrationName) {
         return undefined;
     }
 
-    const integration = INTEGRATIONS[integrationName!];
+    const integration = INTEGRATIONS[integrationName!.toLowerCase()];
     if (!integration) {
-        logError("Supported integrations are 'volt', 'standard', and 'v1'.");
+        logError(
+            `\n"${integrationName}" is not a valid integration. The options are:\n${Object.keys(
+                INTEGRATIONS
+            )
+                .map((x) => `\t- ${x}`)
+                .join("\n")}`
+        );
         exit(1);
     }
     return integration.id;

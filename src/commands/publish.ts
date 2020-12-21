@@ -31,13 +31,13 @@ import {
     validateCategory,
     validateInputs,
 } from "../utils";
-import { validateIntegration } from "../utils/validation";
+import { integrationIdFromName } from "../utils/validation";
 
 const publish = async ({
     name,
     category,
     categories,
-    integrationName: integrationName,
+    integrationName,
 }: {
     name: string | null;
     category: string;
@@ -164,7 +164,6 @@ const update = async ({
     const {
         activeVersion,
         category: currentCategory,
-
         displayName,
         id,
         isPublic,
@@ -178,7 +177,7 @@ const update = async ({
         await validateCategory(updatedCategory);
     }
 
-    const integrationId = validateIntegration(updatedIntegration);
+    const integrationId = integrationIdFromName(updatedIntegration);
 
     try {
         const res: AxiosResponse = await updateBlockRequest({
