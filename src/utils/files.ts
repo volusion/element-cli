@@ -13,6 +13,7 @@ export interface BlockFileObject {
     publishedName: string;
     published?: boolean; // Since v.2.0.8
     activeVersion?: number;
+    integrationId?: number;
 }
 
 type UpdateData = Partial<BlockFileObject>;

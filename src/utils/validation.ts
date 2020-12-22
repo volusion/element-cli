@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { exit } from "process";
 
-import { BLOCK_SETTINGS_FILE } from "../constants";
+import { BLOCK_SETTINGS_FILE, INTEGRATIONS } from "../constants";
 import { formatName, logError, readBlockSettingsFile } from "./index";
 import { getCategoryNames } from "./network";
 
@@ -33,11 +33,22 @@ export const validateCategory = async (
     }
 };
 
-export const validateInputs = async (
-    name: string | null,
-    category: string,
-    categories?: string[]
-): Promise<{ displayName: string; publishedName: string; id: string }> => {
+export const validateInputs = async ({
+    name,
+    category,
+    categories,
+    integrationName,
+}: {
+    name: string | null;
+    category: string;
+    categories?: string[];
+    integrationName: string | undefined;
+}): Promise<{
+    displayName: string;
+    publishedName: string;
+    id: string;
+    integrationId: number | undefined;
+}> => {
     // Commander sends `name` as a function if user does not
     // provide the name
     if (typeof name === "function") {
@@ -49,6 +60,8 @@ export const validateInputs = async (
         exit(1);
     }
 
+    const integrationId = integrationIdFromName(integrationName);
+
     await validateCategory(category, categories);
 
     const nameFromDotFile = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
@@ -56,7 +69,7 @@ export const validateInputs = async (
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
-    return { displayName, publishedName, id };
+    return { displayName, publishedName, id, integrationId };
 };
 
 export const validateBlockPublished = (): void => {
@@ -75,4 +88,25 @@ export const validateBlockDirectory = (): void => {
         );
         process.exit(1);
     }
+};
+
+export const integrationIdFromName = (
+    integrationName: string | undefined
+): number | undefined => {
+    if (!integrationName) {
+        return undefined;
+    }
+
+    const integration = INTEGRATIONS[integrationName!.toLowerCase()];
+    if (!integration) {
+        logError(
+            `\n"${integrationName}" is not a valid integration. The options are:\n${Object.keys(
+                INTEGRATIONS
+            )
+                .map((x) => `\t- ${x}`)
+                .join("\n")}`
+        );
+        exit(1);
+    }
+    return integration.id;
 };

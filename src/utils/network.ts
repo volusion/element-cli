@@ -65,6 +65,7 @@ const buildRequestConfig = ({
     url,
     defaultConfig,
     note = "",
+    integrationId,
 }: {
     category?: string;
     fileData: string;
@@ -79,6 +80,7 @@ const buildRequestConfig = ({
     url: string;
     defaultConfig: { [key: string]: any };
     note?: string;
+    integrationId: number | undefined;
 }): AxiosRequestConfig => {
     const options = requestOptions(method as HTTPVerbs, url);
     const thumbnail = prepareImage(THUMBNAIL_PATH);
@@ -89,6 +91,7 @@ const buildRequestConfig = ({
             content: fileData,
             defaultConfig,
             id,
+            integrationId,
             metadata: {
                 category,
                 isPublic,
@@ -136,40 +139,59 @@ export const getBlockRequest = (id: string, version?: number): AxiosPromise => {
     );
 };
 
-export const createBlockRequest = (
-    defaultConfig: { [key: string]: any },
-    id: string,
+export const createBlockRequest = ({
+    defaultConfig,
+    id,
+    names,
+    fileData,
+    category,
+    integrationId,
+}: {
+    defaultConfig: { [key: string]: any };
+    id: string;
     names: {
         displayName: string;
         publishedName: string;
-    },
-    fileData: string,
-    category: string
-): AxiosPromise =>
+    };
+    fileData: string;
+    category: string;
+    integrationId: number | undefined;
+}): AxiosPromise =>
     axios(
         buildRequestConfig({
             category,
             defaultConfig,
             fileData,
             id,
+            integrationId,
             method: "POST",
             names,
             url: `${config.blockRegistry.host}/blocks`,
         })
     );
 
-export const updateBlockRequest = (
-    defaultConfig: { [key: string]: any },
+export const updateBlockRequest = ({
+    defaultConfig,
+    names,
+    fileData,
+    id,
+    isPublic,
+    version,
+    category,
+    integrationId,
+}: {
+    defaultConfig: { [key: string]: any };
     names: {
         displayName: string;
         publishedName: string;
-    },
-    fileData: string,
-    id: string,
-    isPublic: boolean,
-    version: number,
-    category: string | undefined
-): AxiosPromise =>
+    };
+    fileData: string;
+    id: string;
+    isPublic: boolean;
+    version: number;
+    category: string | undefined;
+    integrationId: number | undefined;
+}): AxiosPromise =>
     axios(
         buildRequestConfig({
             category,
@@ -180,6 +202,7 @@ export const updateBlockRequest = (
             names,
             url: `${config.blockRegistry.host}/blocks/${id}`,
             version,
+            integrationId,
         })
     );
 

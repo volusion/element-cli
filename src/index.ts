@@ -15,7 +15,11 @@ import {
     rollback,
     update,
 } from "./commands/publish";
-import { BLOCK_SETTINGS_FILE, ELEMENT_VERSION } from "./constants";
+import {
+    BLOCK_SETTINGS_FILE,
+    ELEMENT_VERSION,
+    INTEGRATIONS,
+} from "./constants";
 import {
     getBlockRequest,
     getCategoryNames,
@@ -127,6 +131,7 @@ program
         `Publish a block to the Block Theme Registry
                     [-n, --name NAME]
                     [-c, --category CATEGORY]
+                    [-i, --integration]
                     [-m, --major-version]
                     [-s, --silent] An optional flag to suppress prompts
                     Suggestion: Keep your screenshots under 500 kb
@@ -142,11 +147,19 @@ program
         "The Category name that best fits this block"
     )
     .option(
+        "-i, --integration [integration]",
+        `The integration this block is built for. Options are: ${Object.keys(
+            INTEGRATIONS
+        )
+            .map((x) => `"${x}"`)
+            .join(", ")}. Defaults to 'standard'.`
+    )
+    .option(
         "-m, --major-version [majorVersion]",
         "Publish a new major version of this block"
     )
     .option("-s, --silent [silent]", "Suppress prompts")
-    .action(async ({ name, category, majorVersion, silent }) => {
+    .action(async ({ name, category, majorVersion, silent, integration }) => {
         isLoggedInOrExit();
         if (majorVersion) {
             const recommendMsg =
@@ -180,7 +193,12 @@ program
                 exit(1);
             }
             if (category) {
-                publish(name, category, categories);
+                publish({
+                    name,
+                    category,
+                    categories,
+                    integrationName: integration,
+                });
             } else {
                 inquirer
                     .prompt({
@@ -192,9 +210,11 @@ program
                     })
                     .then((val: any) => {
                         const { categoryFromList } = val;
-                        publish(name, categoryFromList).catch((e) =>
-                            logError(e.message)
-                        );
+                        publish({
+                            name,
+                            category: categoryFromList,
+                            integrationName: integration,
+                        }).catch((e) => logError(e.message));
                     });
             }
         }
@@ -212,7 +232,9 @@ program
                         Optionally, do not minify the bundle sent to the server.
                         Useful for debugging.
                     [-c, --category CATEGORY]
-                        Optionally change the block's category.`
+                        Optionally change the block's category.
+                    [-i, --integration]
+                        Optionally change the block's integration.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
@@ -226,11 +248,22 @@ program
         "-c, --category [category]",
         "The Category name that best fits this block"
     )
-    .action(({ togglePublic, unminified, category }) => {
+    .option(
+        "-i, --integration [integration]",
+        `The integration this block is built for. Options are: ${Object.keys(
+            INTEGRATIONS
+        )
+            .map((x) => `"${x}"`)
+            .join(", ")}.`
+    )
+    .action(({ togglePublic, unminified, category, integration }) => {
         isLoggedInOrExit();
-        update(togglePublic, unminified, category).catch((e) =>
-            logError(e.message)
-        );
+        update({
+            togglePublic,
+            unminified,
+            updatedCategory: category,
+            updatedIntegration: integration,
+        }).catch((e) => logError(e.message));
     });
 
 program
