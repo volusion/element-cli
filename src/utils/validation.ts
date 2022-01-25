@@ -38,11 +38,13 @@ export const validateInputs = async ({
     category,
     categories,
     integrationName,
+    cacheDuration,
 }: {
     name: string | null;
     category: string;
     categories?: string[];
     integrationName: string | undefined;
+    cacheDuration: number | undefined;
 }): Promise<{
     displayName: string;
     publishedName: string;
@@ -68,6 +70,10 @@ export const validateInputs = async ({
         .displayName;
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
+
+    if (cacheDuration !== undefined) {
+        validateCacheDuration(cacheDuration);
+    }
 
     return { displayName, publishedName, id, integrationId };
 };
@@ -110,3 +116,15 @@ export const integrationIdFromName = (
     }
     return integration.id;
 };
+
+export function validateCacheDuration(cacheDuration: number): void {
+    if (
+        typeof cacheDuration !== "number" ||
+        Number.isNaN(cacheDuration) ||
+        cacheDuration < 0 ||
+        !Number.isInteger(cacheDuration)
+    ) {
+        logError("Cache duration must be a positive integer or zero.");
+        exit(1);
+    }
+}
