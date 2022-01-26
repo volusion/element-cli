@@ -14,6 +14,7 @@ export interface BlockFileObject {
     published?: boolean; // Since v.2.0.8
     activeVersion?: number;
     integrationId?: number;
+    outputCacheDuration: number;
 }
 
 type UpdateData = Partial<BlockFileObject>;

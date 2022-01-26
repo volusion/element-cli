@@ -66,6 +66,7 @@ const buildRequestConfig = ({
     defaultConfig,
     note = "",
     integrationId,
+    outputCacheDuration,
 }: {
     category?: string;
     fileData: string;
@@ -81,6 +82,7 @@ const buildRequestConfig = ({
     defaultConfig: { [key: string]: any };
     note?: string;
     integrationId: number | undefined;
+    outputCacheDuration: number;
 }): AxiosRequestConfig => {
     const options = requestOptions(method as HTTPVerbs, url);
     const thumbnail = prepareImage(THUMBNAIL_PATH);
@@ -99,6 +101,7 @@ const buildRequestConfig = ({
                 note,
                 thumbnail,
             },
+            outputCacheDuration,
             version,
         },
     };
@@ -146,6 +149,7 @@ export const createBlockRequest = ({
     fileData,
     category,
     integrationId,
+    outputCacheDuration,
 }: {
     defaultConfig: { [key: string]: any };
     id: string;
@@ -156,6 +160,7 @@ export const createBlockRequest = ({
     fileData: string;
     category: string;
     integrationId: number | undefined;
+    outputCacheDuration: number;
 }): AxiosPromise =>
     axios(
         buildRequestConfig({
@@ -167,6 +172,7 @@ export const createBlockRequest = ({
             method: "POST",
             names,
             url: `${config.blockRegistry.host}/blocks`,
+            outputCacheDuration,
         })
     );
 
@@ -179,6 +185,7 @@ export const updateBlockRequest = ({
     version,
     category,
     integrationId,
+    outputCacheDuration,
 }: {
     defaultConfig: { [key: string]: any };
     names: {
@@ -191,6 +198,7 @@ export const updateBlockRequest = ({
     version: number;
     category: string | undefined;
     integrationId: number | undefined;
+    outputCacheDuration: number;
 }): AxiosPromise =>
     axios(
         buildRequestConfig({
@@ -203,6 +211,7 @@ export const updateBlockRequest = ({
             url: `${config.blockRegistry.host}/blocks/${id}`,
             version,
             integrationId,
+            outputCacheDuration,
         })
     );
 

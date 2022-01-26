@@ -134,6 +134,8 @@ program
                     [-i, --integration]
                     [-m, --major-version]
                     [-s, --silent] An optional flag to suppress prompts
+                    [--cache-duration NUMBER] An optional cache duration in seconds.
+                      Defaults to 0 (no cache).
                     Suggestion: Keep your screenshots under 500 kb
                                 and aim for more of a rectangle than
                                 a square.`
@@ -159,66 +161,82 @@ program
         "Publish a new major version of this block"
     )
     .option("-s, --silent [silent]", "Suppress prompts")
-    .action(async ({ name, category, majorVersion, silent, integration }) => {
-        isLoggedInOrExit();
-        if (majorVersion) {
-            const recommendMsg =
-                "We recommend tagging your major releases and creating new branches from them for future updates.";
-            if (silent) {
-                logInfo(recommendMsg);
-                await newMajorVersion();
-            }
-            inquirer
-                .prompt({
-                    default: true,
-                    message: `Are you sure you want to create a new major release? ${recommendMsg}`,
-                    name: "majorConfirmation",
-                    type: "confirm",
-                })
-                .then((confirmation: any) => {
-                    if (confirmation.majorConfirmation) {
-                        newMajorVersion().catch((e) => logError(e.message));
-                    } else {
-                        exit(0);
-                    }
-                });
-        } else {
-            const categories = await getCategoryNames();
-            if (!category && silent) {
-                logError(
-                    "When passing the silent flag, you must pass --category\n"
-                );
-                logInfo("Please choose from the list of valid categories:");
-                logInfo((categories || []).join("\n"));
-                exit(1);
-            }
-            if (category) {
-                publish({
-                    name,
-                    category,
-                    categories,
-                    integrationName: integration,
-                });
-            } else {
+    .option(
+        "--cache-duration [cacheDuration]",
+        "Cache duration in seconds",
+        "0"
+    )
+    .action(
+        async ({
+            name,
+            category,
+            majorVersion,
+            silent,
+            integration,
+            cacheDuration,
+        }) => {
+            isLoggedInOrExit();
+            if (majorVersion) {
+                const recommendMsg =
+                    "We recommend tagging your major releases and creating new branches from them for future updates.";
+                if (silent) {
+                    logInfo(recommendMsg);
+                    await newMajorVersion();
+                }
                 inquirer
                     .prompt({
-                        choices: categories,
-                        message:
-                            "Select the Category that best fits this block:",
-                        name: "categoryFromList",
-                        type: "list",
+                        default: true,
+                        message: `Are you sure you want to create a new major release? ${recommendMsg}`,
+                        name: "majorConfirmation",
+                        type: "confirm",
                     })
-                    .then((val: any) => {
-                        const { categoryFromList } = val;
-                        publish({
-                            name,
-                            category: categoryFromList,
-                            integrationName: integration,
-                        }).catch((e) => logError(e.message));
+                    .then((confirmation: any) => {
+                        if (confirmation.majorConfirmation) {
+                            newMajorVersion().catch((e) => logError(e.message));
+                        } else {
+                            exit(0);
+                        }
                     });
+            } else {
+                const categories = await getCategoryNames();
+                if (!category && silent) {
+                    logError(
+                        "When passing the silent flag, you must pass --category\n"
+                    );
+                    logInfo("Please choose from the list of valid categories:");
+                    logInfo((categories || []).join("\n"));
+                    exit(1);
+                }
+                if (category) {
+                    publish({
+                        name,
+                        category,
+                        categories,
+                        integrationName: integration,
+                        cacheDuration,
+                    });
+                } else {
+                    inquirer
+                        .prompt({
+                            choices: categories,
+                            message:
+                                "Select the Category that best fits this block:",
+                            name: "categoryFromList",
+                            type: "list",
+                        })
+                        .then((val: any) => {
+                            const { categoryFromList } = val;
+                            publish({
+                                name,
+                                category: categoryFromList,
+                                integrationName: integration,
+                                cacheDuration,
+                            }).catch((e) => logError(e.message));
+                        });
+                }
             }
         }
-    });
+    );
 
 program
     .command("update")
@@ -234,7 +252,10 @@ program
                     [-c, --category CATEGORY]
                         Optionally change the block's category.
                     [-i, --integration]
-                        Optionally change the block's integration.`
+                        Optionally change the block's integration.
+                    [--cache-duration NUMBER]
+                        Optionally change the cache duration (in seconds).
+                        0 means no cache.`
     )
     .option(
         "-p, --toggle-public [togglePublic]",
@@ -256,15 +277,25 @@ program
             .map((x) => `"${x}"`)
             .join(", ")}.`
     )
-    .action(({ togglePublic, unminified, category, integration }) => {
-        isLoggedInOrExit();
-        update({
+    .option("--cache-duration [cacheDuration]", "Cache duration in seconds")
+    .action(
+        ({
             togglePublic,
             unminified,
-            updatedCategory: category,
-            updatedIntegration: integration,
-        }).catch((e) => logError(e.message));
-    });
+            category,
+            integration,
+            cacheDuration,
+        }) => {
+            isLoggedInOrExit();
+            update({
+                togglePublic,
+                unminified,
+                updatedCategory: category,
+                updatedIntegration: integration,
+                cacheDuration,
+            }).catch((e) => logError(e.message));
+        }
+    );
 
 program
     .command("rollback")

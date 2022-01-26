@@ -31,21 +31,28 @@ import {
     validateCategory,
     validateInputs,
 } from "../utils";
-import { integrationIdFromName } from "../utils/validation";
+import {
+    integrationIdFromName,
+    validateCacheDuration,
+} from "../utils/validation";
 
 const publish = async ({
     name,
     category,
     categories,
     integrationName,
+    cacheDuration,
 }: {
     name: string | null;
     category: string;
     categories?: string[];
     integrationName?: string;
+    cacheDuration: string | undefined;
 }): Promise<void> => {
     validateBlockDirectory();
     await runBuild();
+
+    const outputCacheDuration = Number(cacheDuration);
 
     const {
         displayName,
@@ -57,6 +64,7 @@ const publish = async ({
         category,
         integrationName,
         name,
+        cacheDuration: outputCacheDuration,
     });
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
@@ -74,6 +82,7 @@ const publish = async ({
                 displayName,
                 publishedName,
             },
+            outputCacheDuration,
         });
 
         logResponse(res);
@@ -88,6 +97,7 @@ const publish = async ({
             integrationId: res.data.integrationId,
             isPublic: false,
             published: true,
+            outputCacheDuration,
         });
 
         logSuccess(`
@@ -142,11 +152,13 @@ const newMajorVersion = async (): Promise<void> => {
 };
 
 const update = async ({
+    cacheDuration,
     togglePublic,
     unminified,
     updatedCategory,
     updatedIntegration,
 }: {
+    cacheDuration: string | undefined;
     togglePublic: boolean;
     unminified: boolean;
     updatedCategory: string | undefined;
@@ -154,6 +166,9 @@ const update = async ({
 }): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
+    if (cacheDuration !== undefined) {
+        validateCacheDuration(Number(cacheDuration));
+    }
     await runBuild();
 
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
@@ -168,6 +183,7 @@ const update = async ({
         id,
         isPublic,
         publishedName,
+        outputCacheDuration,
     } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const publicFlag = togglePublic ? !isPublic : isPublic;
@@ -179,6 +195,10 @@ const update = async ({
 
     const integrationId = integrationIdFromName(updatedIntegration);
 
+    const newCacheDuration =
+        cacheDuration === undefined
+            ? outputCacheDuration
+            : Number(cacheDuration);
     try {
         const res: AxiosResponse = await updateBlockRequest({
             defaultConfig,
@@ -189,6 +209,7 @@ const update = async ({
             version,
             category: updatedCategory || currentCategory,
             integrationId,
+            outputCacheDuration: newCacheDuration,
         });
 
         logResponse(res);
@@ -199,6 +220,7 @@ const update = async ({
             integrationId: res.data.integrationId,
             isPublic: publicFlag,
             published: true,
+            outputCacheDuration: newCacheDuration,
         });
 
         logSuccess(`
