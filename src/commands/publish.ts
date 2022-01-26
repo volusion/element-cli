@@ -47,7 +47,7 @@ const publish = async ({
     category: string;
     categories?: string[];
     integrationName?: string;
-    cacheDuration: string;
+    cacheDuration: string | undefined;
 }): Promise<void> => {
     validateBlockDirectory();
     await runBuild();
@@ -158,7 +158,7 @@ const update = async ({
     updatedCategory,
     updatedIntegration,
 }: {
-    cacheDuration: string;
+    cacheDuration: string | undefined;
     togglePublic: boolean;
     unminified: boolean;
     updatedCategory: string | undefined;
@@ -167,7 +167,6 @@ const update = async ({
     validateBlockDirectory();
     validateBlockPublished();
     if (cacheDuration !== undefined) {
-        logInfo(`cacheDuration: ${cacheDuration}`);
         validateCacheDuration(Number(cacheDuration));
     }
     await runBuild();
