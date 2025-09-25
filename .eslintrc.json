@@ -1,0 +1,25 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "plugins": ["@typescript-eslint", "prettier"],
+    "extends": ["eslint:recommended", "prettier"],
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "tabWidth": 4,
+                "trailingComma": "es5"
+            }
+        ]
+    },
+    "env": {
+        "node": true,
+        "es6": true,
+        "jest": true
+    },
+    "ignorePatterns": ["**/*.d.ts", "bin/**/*", "node_modules/**/*"]
+}

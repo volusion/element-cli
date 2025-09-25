@@ -1,4 +1,9 @@
-import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+    AxiosPromise,
+    AxiosRequestConfig,
+    AxiosResponse,
+    AxiosError,
+} from "axios";
 import { exit } from "process";
 
 import config from "../../config";
@@ -171,8 +176,8 @@ export const createBlockRequest = ({
             integrationId,
             method: "POST",
             names,
-            url: `${config.blockRegistry.host}/blocks`,
             outputCacheDuration,
+            url: `${config.blockRegistry.host}/blocks`,
         })
     );
 
@@ -205,13 +210,13 @@ export const updateBlockRequest = ({
             category,
             defaultConfig,
             fileData,
+            integrationId,
             isPublic,
             method: "PUT",
             names,
+            outputCacheDuration,
             url: `${config.blockRegistry.host}/blocks/${id}`,
             version,
-            integrationId,
-            outputCacheDuration,
         })
     );
 
@@ -264,16 +269,22 @@ export const rollbackBlockRequest = (
 export const getCategoryNames = async (): Promise<string[] | undefined> => {
     try {
         const url = `${config.blockRegistry.host}/categories`;
-        return axios(
-            requestOptions("GET", url)
-        ).then((categories: AxiosResponse) =>
-            categories.data.map(
-                (category: { id: string; name: string }) => category.name
-            )
+        return axios(requestOptions("GET", url)).then(
+            (categories: AxiosResponse) =>
+                categories.data.map(
+                    (category: { id: string; name: string }) => category.name
+                )
         );
     } catch (err) {
-        logError(`Trouble reaching the categories service: ${err.message}`);
-        checkErrorCode(err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        logError(`Trouble reaching the categories service: ${errorMessage}`);
+
+        const errorToLog = err instanceof Error ? err : new Error(String(err));
+        logError(errorToLog);
+
+        if (err && typeof err === "object" && "response" in err) {
+            checkErrorCode(err as AxiosError);
+        }
         exit(1);
     }
 };

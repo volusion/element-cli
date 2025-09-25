@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { exec } from "child_process";
 import { readFileSync } from "fs";
 import { resolve } from "path";
@@ -36,6 +36,15 @@ import {
     validateCacheDuration,
 } from "../utils/validation";
 
+const handleError = (err: unknown): void => {
+    const errorToLog = err instanceof Error ? err : new Error(String(err));
+    logError(errorToLog);
+
+    if (err && typeof err === "object" && "response" in err) {
+        checkErrorCode(err as AxiosError);
+    }
+};
+
 const publish = async ({
     name,
     category,
@@ -54,18 +63,14 @@ const publish = async ({
 
     const outputCacheDuration = Number(cacheDuration);
 
-    const {
-        displayName,
-        publishedName,
-        id,
-        integrationId,
-    } = await validateInputs({
-        categories,
-        category,
-        integrationName,
-        name,
-        cacheDuration: outputCacheDuration,
-    });
+    const { displayName, publishedName, id, integrationId } =
+        await validateInputs({
+            cacheDuration: outputCacheDuration,
+            categories,
+            category,
+            integrationName,
+            name,
+        });
     const filePath = resolve(cwd(), BUILT_FILE_PATH);
     const blockData = readFileSync(filePath).toString();
     const defaultConfig = readBlockSettingsFile(USER_DEFINED_BLOCK_CONFIG_FILE);
@@ -96,8 +101,8 @@ const publish = async ({
             id: res.data.id,
             integrationId: res.data.integrationId,
             isPublic: false,
-            published: true,
             outputCacheDuration,
+            published: true,
         });
 
         logSuccess(`
@@ -107,8 +112,7 @@ const publish = async ({
 
         exit(0);
     } catch (err) {
-        logError(err);
-        checkErrorCode(err);
+        handleError(err);
         exit(1);
     }
 };
@@ -145,8 +149,7 @@ const newMajorVersion = async (): Promise<void> => {
         `);
         exit(0);
     } catch (err) {
-        logError(err);
-        checkErrorCode(err);
+        handleError(err);
         exit(1);
     }
 };
@@ -201,15 +204,15 @@ const update = async ({
             : Number(cacheDuration);
     try {
         const res: AxiosResponse = await updateBlockRequest({
+            category: updatedCategory || currentCategory,
             defaultConfig,
-            names: { displayName, publishedName },
             fileData: code,
             id,
-            isPublic: publicFlag,
-            version,
-            category: updatedCategory || currentCategory,
             integrationId,
+            isPublic: publicFlag,
+            names: { displayName, publishedName },
             outputCacheDuration: newCacheDuration,
+            version,
         });
 
         logResponse(res);
@@ -219,8 +222,8 @@ const update = async ({
             category: res.data.category,
             integrationId: res.data.integrationId,
             isPublic: publicFlag,
-            published: true,
             outputCacheDuration: newCacheDuration,
+            published: true,
         });
 
         logSuccess(`
@@ -230,8 +233,7 @@ const update = async ({
 
         exit(0);
     } catch (err) {
-        logError(err);
-        checkErrorCode(err);
+        handleError(err);
         exit(1);
     }
 };
@@ -240,9 +242,8 @@ const release = async (note: string): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
 
-    const { activeVersion, displayName, id } = readBlockSettingsFile(
-        BLOCK_SETTINGS_FILE
-    );
+    const { activeVersion, displayName, id } =
+        readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const version = activeVersion || 1;
 
@@ -262,8 +263,7 @@ const release = async (note: string): Promise<void> => {
 
         exit(0);
     } catch (err) {
-        logError(err);
-        checkErrorCode(err);
+        handleError(err);
         exit(1);
     }
 };
@@ -272,9 +272,8 @@ const rollback = async (): Promise<void> => {
     validateBlockDirectory();
     validateBlockPublished();
 
-    const { activeVersion, displayName, id } = readBlockSettingsFile(
-        BLOCK_SETTINGS_FILE
-    );
+    const { activeVersion, displayName, id } =
+        readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const version = activeVersion || 1;
 
@@ -290,8 +289,7 @@ const rollback = async (): Promise<void> => {
 
         exit(0);
     } catch (err) {
-        logError(err);
-        checkErrorCode(err);
+        handleError(err);
         exit(1);
     }
 };
@@ -303,9 +301,8 @@ const blockDetails = (): {
     validateBlockDirectory();
     validateBlockPublished();
 
-    const { activeVersion, displayName } = readBlockSettingsFile(
-        BLOCK_SETTINGS_FILE
-    );
+    const { activeVersion, displayName } =
+        readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 
     const version = activeVersion || 1;
 
@@ -337,7 +334,9 @@ async function runBuild(): Promise<void> {
         const { stdout } = await execAsync("npm run build");
         logInfo(stdout);
     } catch (error) {
-        logError(`${error.message}
+        const errorMessage =
+            error instanceof Error ? error.message : String(error);
+        logError(`${errorMessage}
 
             Error encountered running the build. Please run "npm run build" after addressing the issue.
         `);
