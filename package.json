@@ -21,6 +21,9 @@
     "resolutions": {
         "**/**/node-gyp": "5.0.0"
     },
+    "overrides": {
+        "tmp": "0.2.5"
+    },
     "dependencies": {
         "axios": "^1.6.8",
         "chalk": "^2.4.1",

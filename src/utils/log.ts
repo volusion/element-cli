@@ -1,5 +1,5 @@
-import { AxiosError } from 'axios';
-import * as chalk from 'chalk';
+import { AxiosError } from "axios";
+import * as chalk from "chalk";
 
 // tslint:disable no-console
 const log = console.log;
@@ -21,11 +21,11 @@ export const logSuccess = (toLog: string): void => {
 
 export const checkErrorCode = (err: AxiosError): void => {
     if (err.response && err.response.status === 413) {
-        const contentLength = err.config?.headers?.['Content-Length'];
+        const contentLength = err.config?.headers?.["Content-Length"];
         const roundedContentSize = Math.round(
-            typeof contentLength === 'string'
+            typeof contentLength === "string"
                 ? parseInt(contentLength, 10) / 1000
-                : 0,
+                : 0
         );
         const message = `Your total upload size -- block, screenshot, and metadata -- was approximately ${roundedContentSize} kb and the maximum payload size is 1000 kb. For an easy win, you could try decreasing the size of the thumbnail.`;
         logInfo(message);
