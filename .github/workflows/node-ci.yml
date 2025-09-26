@@ -11,12 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 24.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 24.x
+          node-version: 18.x
+
+      - name: Clear npm cache
+        run: npm cache clean --force
 
       - name: Install npm packages
         run: npm ci
