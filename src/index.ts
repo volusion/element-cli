@@ -106,9 +106,8 @@ program
     .description("View block metadata information from server")
     .action(async () => {
         isLoggedInOrExit();
-        const { activeVersion, id, published } = readBlockSettingsFile(
-            BLOCK_SETTINGS_FILE
-        );
+        const { activeVersion, id, published } =
+            readBlockSettingsFile(BLOCK_SETTINGS_FILE);
         if (!published) {
             logWarn(
                 "You must first publish your block to view server information."
@@ -209,11 +208,11 @@ program
                 }
                 if (category) {
                     publish({
-                        name,
-                        category,
-                        categories,
-                        integrationName: integration,
                         cacheDuration,
+                        categories,
+                        category,
+                        integrationName: integration,
+                        name,
                     });
                 } else {
                     inquirer
@@ -227,10 +226,10 @@ program
                         .then((val: any) => {
                             const { categoryFromList } = val;
                             publish({
-                                name,
+                                cacheDuration,
                                 category: categoryFromList,
                                 integrationName: integration,
-                                cacheDuration,
+                                name,
                             }).catch((e) => logError(e.message));
                         });
                 }
@@ -288,11 +287,11 @@ program
         }) => {
             isLoggedInOrExit();
             update({
+                cacheDuration,
                 togglePublic,
                 unminified,
                 updatedCategory: category,
                 updatedIntegration: integration,
-                cacheDuration,
             }).catch((e) => logError(e.message));
         }
     );

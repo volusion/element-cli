@@ -11,15 +11,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 12.x
+          node-version: 18.x
+
+      - name: Configure npm for CI
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set //registry.npmjs.org/:_authToken ""
+          npm config set audit false
 
       - name: Install npm packages
-        run: npm ci
+        run: npm install
 
       - name: Run lint
         run: npm run lint

@@ -66,8 +66,8 @@ export const validateInputs = async ({
 
     await validateCategory(category, categories);
 
-    const nameFromDotFile = readBlockSettingsFile(BLOCK_SETTINGS_FILE)
-        .displayName;
+    const nameFromDotFile =
+        readBlockSettingsFile(BLOCK_SETTINGS_FILE).displayName;
     const displayName = formatName(name || nameFromDotFile);
     const { publishedName, id } = readBlockSettingsFile(BLOCK_SETTINGS_FILE);
 

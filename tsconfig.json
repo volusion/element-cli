@@ -1,16 +1,14 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "lib": ["es7"],
-    "outDir": "bin",
-    "strict": true,
-    "sourceMap": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "resolveJsonModule": true,
-  },
-  "include": [
-    "src/**/*.ts"
-  ]
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "lib": ["es7", "dom"],
+        "outDir": "bin",
+        "strict": true,
+        "sourceMap": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "resolveJsonModule": true
+    },
+    "include": ["src/**/*.ts"]
 }

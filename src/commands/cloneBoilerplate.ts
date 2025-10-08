@@ -22,7 +22,9 @@ const removeStarterExtras = (toRemove: string[]): void => {
         try {
             rimraf.sync(name);
         } catch (error) {
-            logInfo(`Problem removing ${name}: ${error.message}`);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+            logInfo(`Problem removing ${name}: ${errorMessage}`);
         }
     });
 };
@@ -77,7 +79,8 @@ const cloneBoilerplate = async (name: string): Promise<void> => {
 
         exit(0);
     } catch (err) {
-        logError(err);
+        const errorToLog = err instanceof Error ? err : new Error(String(err));
+        logError(errorToLog);
         logInfo("Hint: Try `element login` before running this command again.");
         exit(1);
     }
