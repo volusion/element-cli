@@ -1,5 +1,8 @@
 name: Publish a New Version
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -38,6 +41,8 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: check_version
     if: ${{ needs.check_version.outputs.should_publish == 'true' }}
     env:
