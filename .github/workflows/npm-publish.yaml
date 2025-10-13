@@ -1,0 +1,87 @@
+name: Publish a New Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check_version:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    outputs:
+      new_version: ${{ steps.new_version.outputs.new_version }}
+      should_publish: ${{ steps.is_published.outputs.published == '' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 12
+      - name: "Check new version number"
+        id: new_version
+        shell: bash
+        run: |
+          set -e
+          new_version=$(cat package.json | jq -r .version)
+          echo "::set-output name=new_version::$new_version"
+      - name: "Check if version is published in NPM"
+        id: is_published
+        shell: bash
+        run: |
+          set -e
+          package_name=$(cat package.json | jq -r .name)
+          npm config set registry https://volusion.jfrog.io/artifactory/api/npm/npm/
+          curl -u ${{secrets.JF_ARTIFACTORY_USER_NAME}}:${{secrets.JF_ARTIFACTORY_API_KEY}} https://volusion.jfrog.io/artifactory/api/npm/auth >> ~/.npmrc
+          result=$(npm view "${package_name}@${{ steps.new_version.outputs.new_version }}" version)
+          echo "::set-output name=published::$result"
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: check_version
+    if: ${{ needs.check_version.outputs.should_publish == 'true' }}
+    env:
+      NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 12
+
+      - run: npm ci
+      - run: npm run prepare
+      - run: npm run test
+
+      - name: "Register with Artifactory"
+        run: |
+          npm config set registry https://volusion.jfrog.io/artifactory/api/npm/npm/
+          curl -u ${{secrets.JF_ARTIFACTORY_USER_NAME}}:${{secrets.JF_ARTIFACTORY_API_KEY}} https://volusion.jfrog.io/artifactory/api/npm/auth >> ~/.npmrc
+
+      - name: "Check current version"
+        id: current_version
+        run: |
+          package_name=$(cat package.json | jq -r .name)
+          result=$(npm view ${package_name} version)
+          echo "::set-output name=current_version::$result"
+
+      - name: "Publish"
+        run: npm publish
+
+      - name: "Create tag for new release"
+        run: |
+          git fetch --all --tags
+          git tag v${{ needs.check_version.outputs.new_version }}
+          git push --tags
+
+      - name: "Changelog"
+        run: git shortlog --no-merges v${{ steps.current_version.outputs.current_version }}.. > changes.txt
+      - name: "Create release"
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.check_version.outputs.new_version }}
+          release_name: "[Release] ${{ needs.check_version.outputs.new_version }}"
+          body_path: changes.txt
+          draft: false
+          prerelease: false
